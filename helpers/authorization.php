@@ -1,6 +1,6 @@
 <?php
 require_once("config.php");
-require_once("helpers/authentication.php");
+require_once("authentication.php");
 
 /**
  * Vracia na login page s parametrom unauth

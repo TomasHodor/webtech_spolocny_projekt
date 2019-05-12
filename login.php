@@ -2,11 +2,9 @@
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 
-if (!getAuthentication()) {
-  if (isset($_POST)) {
-    setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
-    header('Location: index.php');
-  }
+if (isset($_POST) && $_POST['login'] && $_POST['pass']) {
+  setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
+  header('Location: index.php');
 }
 ?>
 <!DOCTYPE html>

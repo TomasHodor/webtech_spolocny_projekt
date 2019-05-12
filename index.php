@@ -1,6 +1,7 @@
 <?php
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
+require_once("helpers/csv.php");
 
 authorize();
 ?>
@@ -26,6 +27,7 @@ authorize();
 
   if (isset($_POST)) {
     setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
+    
   }
 
   echo "Prihlaseny: " . getAuthentication()->name;

@@ -63,8 +63,6 @@ function loginLdap($login, $pass)
     $sr = ldap_search($ldapConnection, $ldapRdn, "uid=$ldapUid");
     $entry = ldap_first_entry($ldapConnection, $sr);
     $usrId = ldap_get_values($ldapConnection, $entry, "uisid")[0];
-    // $usrName = ldap_get_values($ldapConnection, $entry, "givenname")[0];
-    // $usrName .= ' ' . ldap_get_values($ldapConnection, $entry, "sn")[0];
     $usrName = ldap_get_values($ldapConnection, $entry, "cn")[0];
     $usrMail = ldap_get_values($ldapConnection, $entry, "mail")[0];
     $usrType = ldap_get_values($ldapConnection, $entry, "employeeType")[0];

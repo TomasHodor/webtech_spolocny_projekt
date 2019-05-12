@@ -3,13 +3,18 @@ require_once("config.php");
 require_once("helpers/authentication.php");
 
 /**
- * Vracia na login page
+ * Vracia na login page s parametrom unauth
+ * @author Peter Kalanin
  */
 function redirectUnatheticated()
 {
   header('Location: login.php?unauth');
 }
 
+/**
+ * Vracia na index page s parametrom notallowed
+ * @author Peter Kalanin
+ */
 function redirectUnathorized()
 {
   header('Location: index.php?notallowed');
@@ -55,7 +60,9 @@ function authorize()
 
 /**
  * Vrati cistu URL adresu
- * @
+ * @author Peter Kalanin
+ * 
+ * @return String URL adresa
  */
 function getClearUrl()
 {

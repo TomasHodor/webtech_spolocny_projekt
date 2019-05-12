@@ -25,11 +25,6 @@ authorize();
     echo 'Pre danú operáciu nemáte oprávnenie.';
   }
 
-  if (isset($_POST)) {
-    setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
-    
-  }
-
   echo "Prihlaseny: " . getAuthentication()->name;
   ?>
 

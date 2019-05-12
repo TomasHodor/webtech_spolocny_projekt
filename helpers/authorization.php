@@ -1,20 +1,15 @@
 <?php
 require_once("config.php");
-require_once("authentication.php");
+require_once("helpers/authentication.php");
 
 /**
- * Vracia na login page s parametrom unauth
- * @author Peter Kalanin
+ * Vracia na login page
  */
 function redirectUnatheticated()
 {
   header('Location: login.php?unauth');
 }
 
-/**
- * Vracia na index page s parametrom notallowed
- * @author Peter Kalanin
- */
 function redirectUnathorized()
 {
   header('Location: index.php?notallowed');
@@ -30,6 +25,7 @@ function authorize()
 {
   $url = getClearUrl();
   $auth = getAuthentication();
+  echo $url;
 
   if (!getAuthentication()) {
     if ($url != "login.php") {
@@ -59,9 +55,7 @@ function authorize()
 
 /**
  * Vrati cistu URL adresu
- * @author Peter Kalanin
- * 
- * @return String URL adresa
+ * @
  */
 function getClearUrl()
 {

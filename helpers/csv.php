@@ -1,12 +1,5 @@
 <?php
-/**
- * Sluzba prevedie obsah csv suboru na strukturovane pole
- * @author Peter Kalanin
- * 
- * @param String $csvText Obsah csv suboru
- * @param String $delim Oddelovac dat
- * 
- */
+
 function csvToTable($csvText, $delim = ";")
 {
   $table = array();

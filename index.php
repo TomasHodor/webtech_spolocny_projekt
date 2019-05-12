@@ -20,12 +20,15 @@ authorize();
 
 <body>
   <?php
+  if (isset($_GET['notallowed'])) {
+    echo 'Pre danú operáciu nemáte oprávnenie.';
+  }
+
   if (isset($_POST)) {
     setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
   }
 
   echo "Prihlaseny: " . getAuthentication()->name;
-
   ?>
 
 </body>

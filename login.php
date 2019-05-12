@@ -10,7 +10,7 @@
 
 <body>
   <?php
-  if (isset($_GET['auth'])) {
+  if (isset($_GET['unauth'])) {
     echo 'Musite sa prihlasit';
   }
   ?>

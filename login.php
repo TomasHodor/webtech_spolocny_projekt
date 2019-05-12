@@ -1,3 +1,14 @@
+<?php
+require_once("helpers/authentication.php");
+require_once("helpers/authorization.php");
+
+if (!getAuthentication()) {
+  if (isset($_POST)) {
+    setAuthentication(loginLdap($_POST['login'], $_POST['pass']));
+    header('Location: index.php');
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="sk">
 
@@ -14,7 +25,7 @@
     echo 'Musite sa prihlasit';
   }
   ?>
-  <form action="index.php" method="post">
+  <form action="login.php" method="post">
     Login: <input name="login"><br>
     Password: <input name="pass" type="password"><br>
     <button type="submit">Odosli</button>

@@ -15,6 +15,8 @@ if (isset($_POST) && $_POST['login'] && $_POST['pass']) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Login</title>
+
+  <?php require_once("links.php") ?>
 </head>
 
 <body>

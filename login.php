@@ -15,7 +15,9 @@ if($_GET["lang"] == "en") {
     echo '<meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<meta http-equiv="X-UA-Compatible" content="ie=edge">';
+    echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
     echo '<link rel="stylesheet" type="text/css" media="screen" href="main.css">';
+    echo '<link rel="stylesheet" type="text/css" media="print" href="print.css">';
     echo '<link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">';
     echo '</head>';
     echo '<body>';
@@ -26,9 +28,23 @@ if($_GET["lang"] == "en") {
     echo '</header>';
     echo '<form action="login.php" method="POST">';
     echo '<h2>Login</h2>';
-    echo '<input type="text" name="login" placeholder="Username"><br>';
-    echo '<input type="password" name="pass" placeholder="Password"><br>';
-    echo '<input type="submit" value="Log in">';
+    echo '<div class="form-group row">';
+    echo '<label for="login" class="col-sm-2 col-form-label">Login</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="text" class="form-control" id="login" name="login" placeholder="Login">';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="form-group row">';
+    echo '<label for="pass" class="col-sm-2 col-form-label">Password</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="password" class="form-control" id="pass" name="pass" placeholder="Password">';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="form-group row">';
+    echo '<div class="col-sm-12">';
+    echo '<input type="submit" class="btn btn-primary" value="Log in">';
+    echo '</div>';
+    echo '</div>';
     echo '</form>';
 }
 else {
@@ -38,7 +54,9 @@ else {
     echo '<meta charset="utf-8">';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<meta http-equiv="X-UA-Compatible" content="ie=edge">';
+    echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
     echo '<link rel="stylesheet" type="text/css" media="screen" href="main.css">';
+    echo '<link rel="stylesheet" type="text/css" media="print" href="print.css">';
     echo '<link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">';
     echo '</head>';
     echo '<body>';
@@ -49,9 +67,23 @@ else {
     echo '</header>';
     echo '<form action="login.php" method="POST">';
     echo '<h2>Prihlásenie</h2>';
-    echo '<input type="text" name="login" placeholder="Prihlasovacie meno"><br>';
-    echo '<input type="password" name="pass" placeholder="Heslo"><br>';
-    echo '<input type="submit" value="Prihlásiť sa">';
+    echo '<div class="form-group row">';
+    echo '<label for="login" class="col-sm-2 col-form-label">Login</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="text" class="form-control" id="login" name="login" placeholder="Login">';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="form-group row">';
+    echo '<label for="pass" class="col-sm-2 col-form-label">Heslo</label>';
+    echo '<div class="col-sm-10">';
+    echo '<input type="password" class="form-control" id="pass" name="pass" placeholder="Heslo">';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="form-group row">';
+    echo '<div class="col-sm-12">';
+    echo '<input type="submit" class="btn btn-primary" value="Prihlásiť sa">';
+    echo '</div>';
+    echo '</div>';
     echo '</form>';
 }
 echo '</body>';

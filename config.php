@@ -9,3 +9,4 @@ if (!session_id()) {
 }
 
 $ldapServer = "ldap.stuba.sk";
+

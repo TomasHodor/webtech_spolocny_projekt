@@ -20,23 +20,6 @@ function csvToTable($csvText, $delim = ";")
     }
     return $table;
 }
-//authorize();
-
-$lang = "SK";
-if(isset($_GET['lang'])) {
-    $lang = $_GET['lang'];
-}
-?>
-
-<!DOCTYPE html>
-<?php
-if($lang == "EN") {
-    echo $lang;
-    echo "<html lang=\"en\">";
-} else {
-    echo "<html lang =\"sk\">";
-}
-?>
 
 echo '<!DOCTYPE html>';
 if($_GET["lang"] == "en") {
@@ -99,7 +82,7 @@ if($_GET["lang"] == "en") {
         //admin
 
         //ukazka pohladu adminu, treba doplnit udaje
-        echo '<form action="#" method="POST">';
+        echo '<form action="" method="POST" enctype="multipart/form-data">';
         echo '<h3>Password generator</h3>';
         echo '<div class="form-group row">';
         echo '<label for="subor" class="col-sm-4 col-form-label">CSV file</label>';
@@ -110,15 +93,15 @@ if($_GET["lang"] == "en") {
         echo '<div class="form-group row">';
         echo '<label for="oddelovac" class="col-sm-4 col-form-label">Separator</label>';
         echo '<div class="col-sm-8">';
-        echo '<select class="form-control" id="oddelovac">';
-        echo '<option name="ciarka">,</option>';
-        echo '<option name="bodkociarka">;</option>';
+        echo '<select class="form-control" id="oddelovac" name="oddelovac">';
+        echo '<option name="ciarka" value="ciarka">,</option>';
+        echo '<option name="bodkociarka" value="bodkociarka">;</option>';
         echo '</select>';
         echo '</div>';
         echo '</div>';
         echo '<div class="form-group row">';
         echo '<div class="col-sm-12">';
-        echo '<input type="submit" class="btn btn-primary" value="Save">';
+        echo '<input type="submit" class="btn btn-primary" name="genPassword" value="Save">';
         echo '</div>';
         echo '</div>';
         echo '</form>';
@@ -134,7 +117,7 @@ if($_GET["lang"] == "en") {
         echo '<th scope="col">Template ID</th></tr>';
         echo '</thead>';
         echo '<tbody>';
-        echo '<tr><td>15. 5. 2019</td>';
+        /*echo '<tr><td>15. 5. 2019</td>';
         echo '<td>Student 1</td>';
         echo '<td>xstud1@stuba.sk</td>';
         echo '<td>Access data</td>';
@@ -148,7 +131,7 @@ if($_GET["lang"] == "en") {
         echo '<td>Student 3</td>';
         echo '<td>xstud3@stuba.sk</td>';
         echo '<td>Access data</td>';
-        echo '<td>1</td></tr>';
+        echo '<td>1</td></tr>';*/
         echo '</tbody>';
         echo '</table>';
         echo '</div>';
@@ -218,7 +201,7 @@ else {
         //admin
 
         //ukazka pohladu adminu, treba doplnit udaje
-        echo '<form action="#" method="POST">';
+        echo '<form action="" method="POST" enctype="multipart/form-data">';
         echo '<h3>Generovanie hesiel</h3>';
         echo '<div class="form-group row">';
         echo '<label for="subor" class="col-sm-4 col-form-label">CSV súbor</label>';
@@ -229,15 +212,15 @@ else {
         echo '<div class="form-group row">';
         echo '<label for="oddelovac" class="col-sm-4 col-form-label">Oddeľovač</label>';
         echo '<div class="col-sm-8">';
-        echo '<select class="form-control" id="oddelovac">';
-        echo '<option name="ciarka">,</option>';
-        echo '<option name="bodkociarka">;</option>';
+        echo '<select class="form-control" id="oddelovac" name="oddelovac">';
+        echo '<option name="ciarka" value="ciarka">,</option>';
+        echo '<option name="bodkociarka" value="bodkociarka">;</option>';
         echo '</select>';
         echo '</div>';
         echo '</div>';
         echo '<div class="form-group row">';
         echo '<div class="col-sm-12">';
-        echo '<input type="submit" class="btn btn-primary" value="Uložiť">';
+        echo '<input type="submit" class="btn btn-primary" name="genPassword" value="Uložiť">';
         echo '</div>';
         echo '</div>';
         echo '</form>';
@@ -253,7 +236,7 @@ else {
         echo '<th scope="col">ID použitej šablóny</th></tr>';
         echo '</thead>';
         echo '<tbody>';
-        echo '<tr><td>15. 5. 2019</td>';
+        /*echo '<tr><td>15. 5. 2019</td>';
         echo '<td>Student 1</td>';
         echo '<td>xstud1@stuba.sk</td>';
         echo '<td>Prístupové údaje</td>';
@@ -267,7 +250,7 @@ else {
         echo '<td>Student 3</td>';
         echo '<td>xstud3@stuba.sk</td>';
         echo '<td>Prístupové údaje</td>';
-        echo '<td>1</td></tr>';
+        echo '<td>1</td></tr>';*/
         echo '</tbody>';
         echo '</table>';
         echo '</div>';
@@ -276,7 +259,48 @@ else {
         header('Location: index.php?notallowed');
         break;
     }
+
+    $valid_files = array("csv");
+    $target_file = basename($_FILES["subor"]["name"]);
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+    if(isset($_POST["genPassword"])) {
+        $delimeter = $_POST['oddelovac'];
+
+        if (in_array($imageFileType, $valid_files) || $_FILES["subor"]['error'] > 0) {
+            if (file_exists("files/file.csv")) {
+                unlink("files/file.csv");
+            }
+            $file = file($_FILES["subor"]["tmp_name"]);
+            $header = explode($delimeter, $file[0]);
+            $header[0] = substr($header[0], 0, -2);
+            $header[0] .=";heslo";
+            $table = csvToTable($file,";");
+            foreach($table as $value => $line){
+                if($value != sizeof($table) -1 ) {
+                    $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
+                }
+                $table[$value]["heslo"] = generatePassword(15);
+            }
+            $fp = fopen('files/file.csv', 'w');
+
+            fputcsv($fp, $header,";", chr(0));
+            foreach ($table as $fields) {
+                var_dump($fields); echo "<br>";
+                fputcsv($fp, $fields,";", chr(0));
+            }
+            fclose($fp);
+            echo "<a href=\"files/file.csv\">Docs</a>";
+
+        } else {
+            $message = "Nemozem nahrat subor";
+            echo "<script type='text/javascript'>alert('$message');</script>";
+        }
+    }
 }
+?>
+</
+<?php
 echo '</body>';
 echo '</html>';
 ?>

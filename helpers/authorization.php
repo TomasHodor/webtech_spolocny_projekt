@@ -30,6 +30,7 @@ function authorize()
 {
   $url = getClearUrl();
   $auth = getAuthentication();
+  echo $url;
 
   if (!getAuthentication()) {
     if ($url != "login.php") {

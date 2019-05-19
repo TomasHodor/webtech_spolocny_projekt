@@ -1,7 +1,7 @@
 <?php
 
 $dbHost = 'localhost';
-$dbName = 'zadanie7';
+$dbName = 'spolocna';
 $dbUser = 'alexcool';
 $dbPass = 'ptktysq11';
 

@@ -344,8 +344,8 @@ if (isset($_POST["genPassword"])) {
     $delimeter = $_POST['oddelovac'];
 
     if (in_array($imageFileType, $valid_files) || $_FILES["subor"]['error'] > 0) {
-        if (file_exists("file.csv")) {
-            unlink("file.csv");
+        if (file_exists("files/file.csv")) {
+            unlink("files/file.csv");
         }
         $file = file($_FILES["subor"]["tmp_name"]);
         $header = explode($delimeter, $file[0]);
@@ -358,7 +358,7 @@ if (isset($_POST["genPassword"])) {
             }
             $table[$value]["heslo"] = generatePassword(15);
         }
-        $fp = fopen('file.csv', 'w');
+        $fp = fopen('files/file.csv', 'w');
 
         fputcsv($fp, $header, ";", chr(0));
         foreach ($table as $fields) {

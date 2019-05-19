@@ -18,7 +18,8 @@ if($_GET["lang"] == "en") {
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
   echo '<meta http-equiv="X-UA-Compatible" content="ie=edge">';
   echo '<title>Final project</title>';
-  echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+  // echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+  require_once("links.php");
   echo '<link rel="stylesheet" type="text/css" media="screen" href="main.css" />';
   echo '<link rel="stylesheet" type="text/css" media="print" href="print.css">';
   echo '<link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">';
@@ -143,4 +144,3 @@ else {
   echo '</body>';
   echo '</html>';
 }
-?>

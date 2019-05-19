@@ -2,65 +2,68 @@
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 require_once("helpers/csv.php");
+require_once("lib/config.php");
 
 echo '<!DOCTYPE html>';
 if($_GET["lang"] == "en") {
-    echo '<html lang="en">';
-    echo '<head>';
-    echo '<title>Final project</title>';
-    echo '<meta charset="utf-8">';
-    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-    echo '<meta http-equiv="X-UA-Compatible" content="ie=edge">';
-    echo '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">';
-    echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
-    echo '<link rel="stylesheet" type="text/css" media="screen" href="main.css">';
-    echo '<link rel="stylesheet" type="text/css" media="print" href="print.css">';
-    echo '<link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">';
-    echo '</head>';
-    echo '<body>';
-    echo '<header>';
-    echo '<h1>Portal</h1>';
-    echo '<a href="zadanie2.php?lang=sk" id="sk_flag"><img src="https://www.geonames.org/flags/x/sk.gif" width="40px" height="20px"></a>';
-    echo '<a href="zadanie2.php?lang=en" id="en_flag"><img src="https://www.geonames.org/flags/x/uk.gif" width="40px" height="20px"></a>';
-    echo '</header>';
-    echo '<nav class="navbar navbar-expand-lg navbar-dark">';
-    echo '<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">';
-    echo '<span class="navbar-toggler-icon"></span>';
-    echo '</button>';
-    echo '<div class="collapse navbar-collapse" id="navbarSupportedContent">';
-    echo '<ul class="navbar-nav mr-auto">';
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="index.php?lang=en">Home</a>';
-    echo '</li>';
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="zadanie1.php?lang=en">Results</a>';
-    echo '</li>'; 
-    echo '<li class="nav-item active">';
-    echo '<a class="nav-link" href="zadanie2.php?lang=en">Teams</a>';
-    echo '</li>';  
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="zadanie3.php?lang=en">Passwords</a>';
-    echo '</li>';
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="tasks.php?lang=en">Tasks</a>';
-    echo '</li>';    
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=en">Documentation</a>';
-    echo '</li>'; 
-    echo '</ul>';
-    echo '<ul class="nav navbar-nav navbar-right">';
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link disabled" href="#">Logged in as: ' . getAuthentication()->name . '</a>';
-    echo '</li>';
-    echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="index.php?lang=en&logout">Logout</a>';
-    echo '</li>';
-    echo '</ul>';
-    echo '</div>';
-    echo '</nav>';
-    echo '<h2>Teams</h2>';
+    echo '<html lang="en">
+    <head>
+    <title>Final project</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+    <link rel="stylesheet" type="text/css" media="print" href="print.css">
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">
+    </head>
+    <body>
+    <header>
+    <h1>Portal</h1>
+    <a href="zadanie2.php?lang=sk" id="sk_flag"><img src="https://www.geonames.org/flags/x/sk.gif" width="40px" height="20px"></a>
+    <a href="zadanie2.php?lang=en" id="en_flag"><img src="https://www.geonames.org/flags/x/uk.gif" width="40px" height="20px"></a>
+    </header>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+    <a class="nav-link" href="index.php?lang=en">Home</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="zadanie1.php?lang=en">Results</a>
+    </li>
+    <li class="nav-item active">
+    <a class="nav-link" href="zadanie2.php?lang=en">Teams</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="zadanie3.php?lang=en">Passwords</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="tasks.php?lang=en">Tasks</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="documentation.php?lang=en">Documentation</a>
+    </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+    <li class="nav-item">
+    <a class="nav-link disabled" href="#">Logged in as: ' . getAuthentication()->name . '</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="index.php?lang=en&logout">Logout</a>
+    </li>
+    </ul>
+    </div>
+    </nav>
+    <h2>Teams</h2>';
 
-    switch(getAuthentication()->type) {
+    $type = 'admin';
+
+    switch(/*getAuthentication()->*/$type) {
       case 'student':
         //student
 
@@ -142,6 +145,69 @@ if($_GET["lang"] == "en") {
         break;
       case 'admin':
         //admin
+          if(isset($_POST) && $_POST['submit'] === 'add'){
+              $table = csvToTable($_POST['csv'], $_POST['delim']);
+              foreach ($table as $row) {
+                  $status = $db->query('INSERT INTO persons SET 
+                      student_id = ?,
+                      `name` = ?,
+                      email = ?, 
+                      password = ?, 
+                      team = ?, 
+                      points = 0, 
+                      agree = 0',
+                      [
+                          $row['ID'],
+                          $row['Meno'],
+                          $row['Email'],
+                          $row['Heslo'],
+                          $row['Tím'],
+                      ])->affectedRows();
+                  $status = $db->query('INSERT INTO teams SET 
+                      `number` = ?,
+                      points = 0',
+                      [
+                          $row['Tím'],
+                      ])->affectedRows();
+              }
+          }
+
+
+        echo '
+
+    <form method="post">
+        <div class="form-group row">
+        <label for="year" class="col-sm-4 col-form-label">Study year:</label>
+            <div class="col-sm-8"><select class="form-control" name="year" id="year">
+                <option value="2008">2008/2009</option>
+                <option value="2009">2009/2010</option>
+                <option value="2010">2010/2011</option>
+                <option value="2011">2011/2012</option>
+                <option value="2012">2012/2013</option>
+                <option value="2013">2013/2014</option>
+                <option value="2014">2014/2015</option>
+                <option value="2015">2015/2016</option>
+                <option value="2016">2016/2017</option>
+                <option value="2017">2017/2018</option>
+                <option value="2018">2018/2019</option>
+            </select></div>
+        
+        </div>
+        <div class="form-group row">
+            <label for="subject" class="col-sm-4 col-form-label">Subject title</label> 
+            <div class="col-sm-8"><input type="text" class="form-control" name="subject" id="subject"></div>
+        </div>
+        <div class="form-group row">
+            <label for="csv" class="col-sm-4 col-form-label">CSV file: </label>
+            <div class="col-sm-8"><input type="file" class="form-control" name="csv" id="csv"></div>
+        </div>
+        <label for="delim">Delimiter: </label> ; <input type="radio" name="delim" value=";" id="delim">
+          : <input type="radio" name="delim" value=":" id="delim">
+        <div class="form-group row">
+            <div class="col-sm-12"><input type="submit" class="form-control btn-info" value="add" name="submit"></div>
+        </div>
+    </form>
+';
 
         //ukazka pohladu adminu, treba doplnit udaje
         echo '<form action="#" method="POST">';

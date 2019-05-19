@@ -6,10 +6,10 @@ include "lib/config.php";
 $params = [];
 
 $auth = getAuthentication();
-if($auth->type === 'admin'){
+if($auth->type === 'admin') {
 
 
-    if($_POST){
+    if ($_POST) {
         $table = csvToTable($_POST['csv'], $_POST['delim']);
         foreach ($table as $row) {
             $status = $db->query('INSERT INTO persons SET 
@@ -39,30 +39,30 @@ if($auth->type === 'admin'){
 
     }
 
-    if($_GET){
+    if ($_GET) {
         $status = $db->query('SELECT * FROM persons WHERE team = ?',
             [
                 $_GET['team'],
             ])->fetchAll();
 
-        if($status){
+        if ($status) {
             echo '
                 <table>
                     <tr>
                         <th>Email</th>
-                        <th>'.$params['Full Name'].'</th>
-                        <th>'.$params['Points'].'</th>
-                        <th>'.$params['Agree'].'</th>
+                        <th>' . $params['Full Name'] . '</th>
+                        <th>' . $params['Points'] . '</th>
+                        <th>' . $params['Agree'] . '</th>
                     </tr>
                     
                     ';
-            foreach ($status as $i => $row){
+            foreach ($status as $i => $row) {
                 echo '
                     <tr>
-                        <td>'.$row['email'].'</td>
-                        <td>'.$row['name'].'</td>
-                        <td>'.$row['points'].'</td>
-                        <td>'.$row['agree'].'</td>
+                        <td>' . $row['email'] . '</td>
+                        <td>' . $row['name'] . '</td>
+                        <td>' . $row['points'] . '</td>
+                        <td>' . $row['agree'] . '</td>
                     
                     </tr>
                 
@@ -76,6 +76,9 @@ if($auth->type === 'admin'){
         }
     }
 }
+
+$params = [];
+
 ?>
 
 <body>

@@ -151,18 +151,14 @@ if ($_GET["lang"] == "en") {
             if (isset($_POST) && $_POST['submit'] === 'add') {
                 $table = csvToTable(file_get_contents($_FILES['csv']['tmp_name']), $_POST['delim']);
                 foreach ($table as $row) {
-                    foreach ($row as $id => $column){
-                        echo 'id: '. $id . ' data: ' .$column . ' - ';
-                    }
-                    echo '
-                    <br>
-                    ';
                     $status = $db->query('INSERT INTO persons SET 
                       student_id = ?,
                       `name` = ?,
                       email = ?, 
                       password = ?, 
                       team = ?, 
+                      subject = ?, 
+                      `year` = ?, 
                       points = 0, 
                       `max` = 0, 
                       agree = null',
@@ -172,9 +168,13 @@ if ($_GET["lang"] == "en") {
                             $row['Email'],
                             $row['Heslo'],
                             $row['Tím'],
+                            $_POST['subject'],
+                            $_POST['year'],
                         ])->affectedRows();
                 }
             }
+
+
 
 
             echo '
@@ -208,7 +208,7 @@ if ($_GET["lang"] == "en") {
         <label for="delim">Delimiter: </label> ; <input type="radio" name="delim" value=";" id="delim">
           : <input type="radio" name="delim" value=":" id="delim">
         <div class="form-group row">
-            <div class="col-sm-12"><input type="submit" class="form-control btn-info" value="add" name="submit"></div>
+            <div class="col-sm-12"><input type="submit" class="btn btn-primary"  value="add" name="submit"></div>
         </div>
     </form>
 ';
@@ -256,15 +256,50 @@ if ($_GET["lang"] == "en") {
             echo '</div>';
             echo '</form>';
 
+
+
+            $subject = 'WT2';
+            $year = '2018';
+
+            $teams = $db->query('SELECT DISTINCT team from persons where 
+                      `year` = ? AND 
+                      subject = ?',
+                [
+                    $year,
+                    $subject,
+                ])->fetchAll();
+
+
             echo '<form action="#" method="POST">';
             echo '<h3>WT2 (2018/2019) - RT</h3>';
-            echo '<div class="form-group row">';
-            echo '<label for="tim1" class="col-sm-3 col-form-label">Team 1</label>';
-            echo '<label for="tim1" class="col-sm-3 col-form-label">Member 1<br>Member 2<br>Member 3<br>Member 4<br>Member 5</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="tim1" name="tim1" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
+
+            echo $teams[0];
+            foreach ($teams as $team){
+                echo '<div class="form-group row">';
+                echo '<label for="tim1" class="col-sm-3 col-form-label"> Team '. $team['team'] .'</label>';
+                echo '<label for="tim1" class="col-sm-3 col-form-label">';
+                $members = $db->query('SELECT `name` from persons where 
+                      `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
+                    [
+                        $year,
+                        $team['team'],
+                        $subject,
+                    ])->fetchAll();
+
+                foreach ($members as $member){
+                    echo $member['name'] . '<br>';
+                }
+                echo '</label>';
+                echo '<div class="col-sm-6">';
+                echo '<input type="number" class="form-control" id="tim1" name="team'.$team['team'].'" min="0" max="150">';
+                echo '</div>';
+                echo '</div>';
+
+            }
+
+
             echo '<div class="form-group row">';
             echo '<label for="tim2" class="col-sm-3 col-form-label">Team 2</label>';
             echo '<label for="tim2" class="col-sm-3 col-form-label">Member 1<br>Member 2<br>Member 3<br>Member 4<br>Member 5</label>';

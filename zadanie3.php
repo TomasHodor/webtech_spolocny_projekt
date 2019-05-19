@@ -341,17 +341,27 @@ $target_file = basename($_FILES["subor"]["name"]);
 $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
 if (isset($_POST["genPassword"])) {
-    $delimeter = $_POST['oddelovac'];
+    switch($_POST['oddelovac']) {
+        case "bodkociarka":
+            $delimeter = ";"; break;
+        case "ciarka":
+            $delimeter = ","; break;
+        default:
+            $delimeter = ";"; break;
+    }
 
     if (in_array($imageFileType, $valid_files) || $_FILES["subor"]['error'] > 0) {
         if (file_exists("files/file.csv")) {
             unlink("files/file.csv");
+            if (!file_exists("files/file.csv")) {
+                echo "deleted";
+            }
         }
         $file = file($_FILES["subor"]["tmp_name"]);
         $header = explode($delimeter, $file[0]);
-        $header[0] = substr($header[0], 0, -2);
-        $header[0] .= $delimeter."heslo";
-        $table = csvToTable($file, ";");
+        $header[sizeof($header)-1] = substr($header[sizeof($header)-1], 0, -2);
+        array_push($header,"heslo");
+        $table = csvToTable($file, $delimeter);
         foreach ($table as $value => $line) {
             if (substr($table[$value]["login"],-1) == "\n") {
                 $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
@@ -359,10 +369,10 @@ if (isset($_POST["genPassword"])) {
             $table[$value]["heslo"] = generatePassword(15);
         }
         $fp = fopen('files/file.csv', 'w');
-
+        fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
         fputcsv($fp, $header, $delimeter, chr(0));
         foreach ($table as $fields) {
-            fputcsv($fp, $fields, ";", chr(0));
+            fputcsv($fp, $fields, $delimeter, chr(0));
         }
         fclose($fp);
         echo "<a class=\"btn btn-primary\" href=\"files/file.csv\">Vygenerovane hesla</a>";

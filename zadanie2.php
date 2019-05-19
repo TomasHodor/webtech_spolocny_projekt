@@ -173,7 +173,23 @@ if ($_GET["lang"] == "en") {
                         ])->affectedRows();
                 }
             }
+            if(isset($_POST) && $_POST['submit'] === 'change'){
+                foreach ($_POST as $id => $post){
+                $status = $db->query('UPDATE persons SET 
+                      `max` = ? 
+                      where `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
 
+                    [
+                        $post,
+                        '2018',
+                        substr($id, 4),
+                        'WT2',
+                    ])->affectedRows();
+                }
+
+            }
 
 
 
@@ -261,7 +277,7 @@ if ($_GET["lang"] == "en") {
             $subject = 'WT2';
             $year = '2018';
 
-            $teams = $db->query('SELECT DISTINCT team from persons where 
+            $teams = $db->query('SELECT DISTINCT team, `max` from persons where 
                       `year` = ? AND 
                       subject = ?',
                 [
@@ -293,30 +309,14 @@ if ($_GET["lang"] == "en") {
                 }
                 echo '</label>';
                 echo '<div class="col-sm-6">';
-                echo '<input type="number" class="form-control" id="tim1" name="team'.$team['team'].'" min="0" max="150">';
+                echo '<input type="number" class="form-control" id="tim1" name="team'.$team['team'].'" min="0" max="150" value="'.$team['max'].'">';
                 echo '</div>';
                 echo '</div>';
 
             }
-
-
-            echo '<div class="form-group row">';
-            echo '<label for="tim2" class="col-sm-3 col-form-label">Team 2</label>';
-            echo '<label for="tim2" class="col-sm-3 col-form-label">Member 1<br>Member 2<br>Member 3<br>Member 4<br>Member 5</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="tim2" name="tim2" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="tim3" class="col-sm-3 col-form-label">Team 3</label>';
-            echo '<label for="tim3" class="col-sm-3 col-form-label">Member 1<br>Member 2<br>Member 3<br>Member 4<br>Member 5</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="tim3" name="tim3" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
             echo '<div class="form-group row">';
             echo '<div class="col-sm-12">';
-            echo '<input type="submit" class="btn btn-primary" value="Save">';
+            echo '<input type="submit" class="btn btn-primary" value="change" name="submit">';
             echo '</div>';
             echo '</div>';
             echo '</form>';

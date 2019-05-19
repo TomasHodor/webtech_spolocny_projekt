@@ -106,7 +106,45 @@ if($_GET["lang"] == "en") {
         echo '</div>';
         echo '</form>';
 
+        echo '<form action="" method="POST" enctype="multipart/form-data">';
+        echo '<h3>Sending emial</h3>';
+        echo '<div class="form-group row">';
+        echo '<label for="oddelovac" class="col-sm-4 col-form-label">Template</label>';
+        echo '<div class="col-sm-8">';
+        echo '<select class="form-control" id="sablona" name="sablona">';
+        for ($i = 0;$i < 1 ; $i++) {
+            echo '<option name="ciarka" value="ciarka">,</option>';
+            echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+        }
+        echo '</select>';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<label for="subor2" class="col-sm-4 col-form-label">CSV file</label>';
+        echo '<div class="col-sm-8">';
+        echo '<input type="file" class="form-control" id="subor2" name="subor2">';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<label for="sender" class="col-sm-4 col-form-label">Sender</label>';
+        echo '<div class="col-sm-8">';
+        echo '<input type="email" class="form-control" id="sender" name="sender">';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<label for="subject" class="col-sm-4 col-form-label">Subject</label>';
+        echo '<div class="col-sm-8">';
+        echo '<input type="text" class="form-control" id="subject" name="subject">';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<div class="col-sm-12">';
+        echo '<input type="submit" class="btn btn-primary" name="sendemail" value="Send">';
+        echo '</div>';
+        echo '</div>';
+        echo '</form>';
         echo '<div class="table-responsive-sm tab">';
+
         echo '<h3>Sent emails</h3>';
         echo '<table class="table table-hover table-sm">';
         echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
@@ -196,105 +234,166 @@ else {
     echo '</nav>';
     echo '<h2>Generovanie hesiel</h2>';
 
-    switch(getAuthentication()->type) {
-      case 'admin':
-        //admin
+    switch (getAuthentication()->type) {
+        case 'admin':
+            //admin
 
-        //ukazka pohladu adminu, treba doplnit udaje
-        echo '<form action="" method="POST" enctype="multipart/form-data">';
-        echo '<h3>Generovanie hesiel</h3>';
-        echo '<div class="form-group row">';
-        echo '<label for="subor" class="col-sm-4 col-form-label">CSV súbor</label>';
-        echo '<div class="col-sm-8">';
-        echo '<input type="file" class="form-control" id="subor" name="subor">';
-        echo '</div>';
-        echo '</div>';
-        echo '<div class="form-group row">';
-        echo '<label for="oddelovac" class="col-sm-4 col-form-label">Oddeľovač</label>';
-        echo '<div class="col-sm-8">';
-        echo '<select class="form-control" id="oddelovac" name="oddelovac">';
-        echo '<option name="ciarka" value="ciarka">,</option>';
-        echo '<option name="bodkociarka" value="bodkociarka">;</option>';
-        echo '</select>';
-        echo '</div>';
-        echo '</div>';
-        echo '<div class="form-group row">';
-        echo '<div class="col-sm-12">';
-        echo '<input type="submit" class="btn btn-primary" name="genPassword" value="Uložiť">';
-        echo '</div>';
-        echo '</div>';
-        echo '</form>';
+            //ukazka pohladu adminu, treba doplnit udaje
+            echo '<form action="" method="POST" enctype="multipart/form-data">';
+            echo '<h3>Generovanie hesiel</h3>';
+            echo '<div class="form-group row">';
+            echo '<label for="subor" class="col-sm-4 col-form-label">CSV súbor</label>';
+            echo '<div class="col-sm-8">';
+            echo '<input type="file" class="form-control" id="subor" name="subor">';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<label for="oddelovac" class="col-sm-4 col-form-label">Oddeľovač</label>';
+            echo '<div class="col-sm-8">';
+            echo '<select class="form-control" id="oddelovac" name="oddelovac">';
+            echo '<option name="ciarka" value="ciarka">,</option>';
+            echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+            echo '</select>';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<div class="col-sm-12">';
+            echo '<input type="submit" class="btn btn-primary" name="genPassword" value="Uložiť">';
+            echo '</div>';
+            echo '</div>';
+            echo '</form>';
 
-        echo '<div class="table-responsive-sm tab">';
-        echo '<h3>Odoslané maily</h3>';
-        echo '<table class="table table-hover table-sm">';
-        echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-        echo '<tr><th scope="col">Dátum odoslania</th>';
-        echo '<th scope="col">Meno</th>';
-        echo '<th scope="col">Email</th>';
-        echo '<th scope="col">Názov predmetu správy</th>';
-        echo '<th scope="col">ID použitej šablóny</th></tr>';
-        echo '</thead>';
-        echo '<tbody>';
-        /*echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 1</td>';
-        echo '<td>xstud1@stuba.sk</td>';
-        echo '<td>Prístupové údaje</td>';
-        echo '<td>1</td></tr>';
-        echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 2</td>';
-        echo '<td>xstud2@stuba.sk</td>';
-        echo '<td>Prístupové údaje</td>';
-        echo '<td>1</td></tr>';
-        echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 3</td>';
-        echo '<td>xstud3@stuba.sk</td>';
-        echo '<td>Prístupové údaje</td>';
-        echo '<td>1</td></tr>';*/
-        echo '</tbody>';
-        echo '</table>';
-        echo '</div>';
-        break;
-      default:
-        header('Location: index.php?notallowed');
-        break;
+            echo '<form action="" method="POST" enctype="multipart/form-data">';
+            echo '<h3>Odosielanie emialu</h3>';
+            echo '<div class="form-group row">';
+            echo '<label for="oddelovac" class="col-sm-4 col-form-label">Šablóna</label>';
+            echo '<div class="col-sm-8">';
+            echo '<select class="form-control" id="sablona" name="sablona">';
+            for ($i = 0;$i < 1 ; $i++) {
+                echo '<option name="ciarka" value="ciarka">,</option>';
+                echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+            }
+            echo '</select>';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<label for="subor2" class="col-sm-4 col-form-label">CSV súbor</label>';
+            echo '<div class="col-sm-8">';
+            echo '<input type="file" class="form-control" id="subor2" name="subor2">';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<label for="sender" class="col-sm-4 col-form-label">Odosielateľ</label>';
+            echo '<div class="col-sm-8">';
+            echo '<input type="email" class="form-control" id="sender" name="sender">';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<label for="subject" class="col-sm-4 col-form-label">Predmet správy</label>';
+            echo '<div class="col-sm-8">';
+            echo '<input type="text" class="form-control" id="subject" name="subject">';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<div class="col-sm-12">';
+            echo '<input type="submit" class="btn btn-primary" name="sendemail" value="Poslať">';
+            echo '</div>';
+            echo '</div>';
+            echo '</form>';
+            echo '<div class="table-responsive-sm tab">';
+
+            echo '<h3>Odoslané maily</h3>';
+            echo '<table class="table table-hover table-sm">';
+            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
+            echo '<tr><th scope="col">Dátum odoslania</th>';
+            echo '<th scope="col">Meno</th>';
+            echo '<th scope="col">Email</th>';
+            echo '<th scope="col">Názov predmetu správy</th>';
+            echo '<th scope="col">ID použitej šablóny</th></tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            /*echo '<tr><td>15. 5. 2019</td>';
+            echo '<td>Student 1</td>';
+            echo '<td>xstud1@stuba.sk</td>';
+            echo '<td>Prístupové údaje</td>';
+            echo '<td>1</td></tr>';
+            echo '<tr><td>15. 5. 2019</td>';
+            echo '<td>Student 2</td>';
+            echo '<td>xstud2@stuba.sk</td>';
+            echo '<td>Prístupové údaje</td>';
+            echo '<td>1</td></tr>';
+            echo '<tr><td>15. 5. 2019</td>';
+            echo '<td>Student 3</td>';
+            echo '<td>xstud3@stuba.sk</td>';
+            echo '<td>Prístupové údaje</td>';
+            echo '<td>1</td></tr>';*/
+            echo '</tbody>';
+            echo '</table>';
+            echo '</div>';
+            break;
+        default:
+            header('Location: index.php?notallowed');
+            break;
     }
+}
+$valid_files = array("csv");
+$target_file = basename($_FILES["subor"]["name"]);
+$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    $valid_files = array("csv");
-    $target_file = basename($_FILES["subor"]["name"]);
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+if (isset($_POST["genPassword"])) {
+    $delimeter = $_POST['oddelovac'];
 
-    if(isset($_POST["genPassword"])) {
-        $delimeter = $_POST['oddelovac'];
-
-        if (in_array($imageFileType, $valid_files) || $_FILES["subor"]['error'] > 0) {
-            if (file_exists("files/file.csv")) {
-                unlink("files/file.csv");
+    if (in_array($imageFileType, $valid_files) || $_FILES["subor"]['error'] > 0) {
+        if (file_exists("files/file.csv")) {
+            unlink("files/file.csv");
+        }
+        $file = file($_FILES["subor"]["tmp_name"]);
+        $header = explode($delimeter, $file[0]);
+        $header[0] = substr($header[0], 0, -2);
+        $header[0] .= ";heslo";
+        $table = csvToTable($file, ";");
+        foreach ($table as $value => $line) {
+            if ($value != sizeof($table) - 1) {
+                $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
             }
-            $file = file($_FILES["subor"]["tmp_name"]);
-            $header = explode($delimeter, $file[0]);
-            $header[0] = substr($header[0], 0, -2);
-            $header[0] .=";heslo";
-            $table = csvToTable($file,";");
-            foreach($table as $value => $line){
-                if($value != sizeof($table) -1 ) {
-                    $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
-                }
-                $table[$value]["heslo"] = generatePassword(15);
-            }
-            $fp = fopen('files/file.csv', 'w');
+            $table[$value]["heslo"] = generatePassword(15);
+        }
+        $fp = fopen('files/file.csv', 'w');
 
-            fputcsv($fp, $header,";", chr(0));
-            foreach ($table as $fields) {
-                var_dump($fields); echo "<br>";
-                fputcsv($fp, $fields,";", chr(0));
-            }
-            fclose($fp);
-            echo "<a href=\"files/file.csv\">Docs</a>";
+        fputcsv($fp, $header, ";", chr(0));
+        foreach ($table as $fields) {
+            var_dump($fields);
+            echo "<br>";
+            fputcsv($fp, $fields, ";", chr(0));
+        }
+        fclose($fp);
+        echo "<a href=\"files/file.csv\">Docs</a>";
 
-        } else {
-            $message = "Nemozem nahrat subor";
-            echo "<script type='text/javascript'>alert('$message');</script>";
+    } else {
+        $message = "Nemozem nahrat subor";
+        echo "<script type='text/javascript'>alert('$message');</script>";
+    }
+}
+
+$target_file2 = basename($_FILES["subor2"]["name"]);
+$imageFileType = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
+
+if (isset($_POST["sendemail"])) {
+    if (in_array($imageFileType, $valid_files) || $_FILES["subor2"]['error'] > 0) {
+        $file = file($_FILES["subor2"]["tmp_name"]);
+        $header = explode($delimeter, $file[0]);
+        $header[0] = substr($header[0], 0, -2);
+
+        foreach ($table as $valueKey => $value) {
+
+            $to = $value["email"];
+            $subject = $_POST["subject"];
+            $message = 'hello';
+            $headers = 'From: webmaster@example.com' . "\r\n" .
+                'Reply-To: webmaster@example.com' . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+
+            //mail($to, $subject, $message, $headers);
         }
     }
 }

@@ -350,24 +350,22 @@ if (isset($_POST["genPassword"])) {
         $file = file($_FILES["subor"]["tmp_name"]);
         $header = explode($delimeter, $file[0]);
         $header[0] = substr($header[0], 0, -2);
-        $header[0] .= ";heslo";
+        $header[0] .= $delimeter."heslo";
         $table = csvToTable($file, ";");
         foreach ($table as $value => $line) {
-            if ($value != sizeof($table) - 1) {
+            if (substr($table[$value]["login"],-1) == "\n") {
                 $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
             }
             $table[$value]["heslo"] = generatePassword(15);
         }
         $fp = fopen('files/file.csv', 'w');
 
-        fputcsv($fp, $header, ";", chr(0));
+        fputcsv($fp, $header, $delimeter, chr(0));
         foreach ($table as $fields) {
-            var_dump($fields);
-            echo "<br>";
             fputcsv($fp, $fields, ";", chr(0));
         }
         fclose($fp);
-        echo "<a href=\"files/file.csv\">Docs</a>";
+        echo "<a class=\"btn btn-primary\" href=\"files/file.csv\">Vygenerovane hesla</a>";
 
     } else {
         $message = "Nemozem nahrat subor";

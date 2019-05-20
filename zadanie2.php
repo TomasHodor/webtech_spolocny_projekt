@@ -191,6 +191,63 @@ if ($_GET["lang"] == "en") {
 
             }
 
+            if(isset($_REQUEST) && $_REQUEST['action'] === 'agree'){
+                $status = $db->query('UPDATE persons SET 
+                      agree = 3 
+                      where `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
+                    [
+                        '2018',
+                        $_REQUEST['team'],
+                        'WT2',
+                    ])->affectedRows();
+            }
+            if(isset($_REQUEST) && $_REQUEST['action'] === 'disagree'){
+                $status = $db->query('UPDATE persons SET 
+                      agree = 4 
+                      where `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
+                    [
+                        '2018',
+                        $_REQUEST['team'],
+                        'WT2',
+                    ])->affectedRows();
+            }
+
+//            if(isset($_REQUEST) && $_REQUEST['action'] === 'export'){
+//                $people = $db->query('SELECT student_id, `name`, points FROM persons  where
+//                      `year` = ? AND
+//                      subject = ?',
+//                    [
+//                        '2018',
+//                        'WT2',
+//                    ])->fetchAll();
+//
+//                // Creates a new csv file and store it in tmp directory
+//                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+//                header("Content-type: text/csv");
+//                header("Content-disposition: attachment; filename = export.csv");
+//                $csv = fopen('./export.csv', 'w');
+//                $line = 'ID;Name;Points
+//                ';
+//                fwrite($csv, $line);
+//                foreach ($people as $person){
+//                    $line = $person['student_id'] . ';' . $person['name'] . ';' . $person['points'] . '
+//                    ';
+//                    fwrite($csv, $line);
+//                }
+//                fclose($csv);
+//                exit();
+//
+//                // output headers so that the file is downloaded rather than displayed
+//                readfile("./export.csv");
+//            }
+
+
+
+
 
 
             echo '
@@ -221,56 +278,21 @@ if ($_GET["lang"] == "en") {
             <label for="csv" class="col-sm-4 col-form-label">CSV file: </label>
             <div class="col-sm-8"><input type="file" class="form-control" name="csv" id="csv"></div>
         </div>
-        <label for="delim">Delimiter: </label> ; <input type="radio" name="delim" value=";" id="delim">
-          : <input type="radio" name="delim" value=":" id="delim">
         <div class="form-group row">
+        <label for="delim" class="col-sm-4 col-form-label">Delimiter: </label>
+         <b>;</b> <input type="radio" name="delim" value=";" id="delim" class="col-sm-1 col-form-label">
+         <b>:</b> <input type="radio" name="delim" value=":" id="delim" class="col-sm-1 col-form-label">
+        </div>
+       <div class="form-group row">
             <div class="col-sm-12"><input type="submit" class="btn btn-primary"  value="add" name="submit"></div>
         </div>
     </form>
 ';
 
-            //ukazka pohladu adminu, treba doplnit udaje
-            echo '<form action="#" method="POST">';
-            echo '<h3>Adding students</h3>';
-            echo '<div class="form-group row">';
-            echo '<label for="rok" class="col-sm-4 col-form-label">Academic year</label>';
-            echo '<div class="col-sm-8">';
-            echo '<select class="form-control" id="rok">';
-            echo '<option name="2018/2019">2018/2019</option>';
-            echo '<option name="2017/2018">2017/2018</option>';
-            echo '<option name="2016/2017">2016/2017</option>';
-            echo '<option name="2015/2016">2015/2016</option>';
-            echo '<option name="2014/2015">2014/2015</option>';
-            echo '</select>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="nazov" class="col-sm-4 col-form-label">Subject title</label>';
-            echo '<div class="col-sm-8">';
-            echo '<input type="text" class="form-control" id="nazov" name="nazov">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="subor" class="col-sm-4 col-form-label">CSV file</label>';
-            echo '<div class="col-sm-8">';
-            echo '<input type="file" class="form-control" id="subor" name="subor">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="oddelovac" class="col-sm-4 col-form-label">Separator</label>';
-            echo '<div class="col-sm-8">';
-            echo '<select class="form-control" id="oddelovac">';
-            echo '<option name="ciarka">,</option>';
-            echo '<option name="bodkociarka">;</option>';
-            echo '</select>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<div class="col-sm-12">';
-            echo '<input type="submit" class="btn btn-primary" value="add" name="submit">';
-            echo '</div>';
-            echo '</div>';
-            echo '</form>';
+//            echo '<select class="form-control" id="oddelovac">';
+//            echo '<option name="ciarka">,</option>';
+//            echo '<option name="bodkociarka">;</option>';
+//            echo '</select>';
 
 
 
@@ -289,7 +311,6 @@ if ($_GET["lang"] == "en") {
             echo '<form action="#" method="POST">';
             echo '<h3>WT2 (2018/2019) - RT</h3>';
 
-            echo $teams[0];
             foreach ($teams as $team){
                 echo '<div class="form-group row">';
                 echo '<label for="tim1" class="col-sm-3 col-form-label"> Team '. $team['team'] .'</label>';
@@ -321,34 +342,62 @@ if ($_GET["lang"] == "en") {
             echo '</div>';
             echo '</form>';
 
-            echo '<div class="table-responsive-sm tab">';
-            echo '<h3>Team 1</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">Email</th>';
-            echo '<th scope="col">Name</th>';
-            echo '<th scope="col">Points</th>';
-            echo '<th scope="col">Agree</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>xstud1@stuba.sk</td>';
-            echo '<td>Student 1</td>';
-            echo '<td>20</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud2@stuba.sk</td>';
-            echo '<td>Student 2</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud3@stuba.sk</td>';
-            echo '<td>Student 3</td>';
-            echo '<td>5</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
+            foreach ($teams as $team) {
+                echo '<div class="table-responsive-sm tab">';
+                $members = $db->query('SELECT * from persons where 
+                      `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
+                    [
+                        $year,
+                        $team['team'],
+                        $subject,
+                    ])->fetchAll();
+                echo '<h3>Team '.$team['team'].'</h3>';
+                echo '<table class="table table-hover table-sm">';
+                echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
+                echo '<tr><th scope="col">Email</th>';
+                echo '<th scope="col">Name</th>';
+                echo '<th scope="col">Points</th>';
+                echo '<th scope="col">Agree</th></tr>';
+                echo '</thead>';
+                echo '<tbody>';
+                foreach ($members as $member){
+                    echo '<tr><td>'.$member['email'].'</td>';
+                    echo '<td>'.$member['name'].'</td>';
+                    echo '<td>'.$member['points'].'</td>';
+                    echo '<td>';
+                    switch ($member['agree']){
+                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        default: break;
+                    }
+                    echo '</td></tr>';
+
+                }
+                echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
+
+                if($members[0]['agree'] !== 3) {
+                    echo '<div style="margin: 0 auto;margin-top:30px;margin-bottom:30px;width: 20%;">';
+                    echo '
+                        <button onclick="document.location.href=\'zadanie2.php?lang=en&action=agree&team='.$team['team'].'\'"><i class="far fa-thumbs-up"></i> I agree</button>
+                        <button onclick="document.location.href=\'zadanie2.php?lang=en&action=disagree&team='.$team['team'].'\'"><i class="far fa-thumbs-down"></i> I disagree</button>
+                    ';
+                    echo '</div>';
+                }else{
+                    echo '<div style="margin: 0 auto;margin-top:30px;margin-bottom:30px;width: 20%;">';
+                    echo "<p>You agreed with the decision</p>";
+                    echo '</div>';
+                }
+
+            }
 
             echo '<div style="margin: 0 auto;margin-top:30px;margin-bottom:30px;width: 10%;">';
-            echo '<button type="button" class="btn btn-primary" onclick="">Export</button>';
+            echo '<button type="button" class="btn btn-primary" onclick="document.location.href=\'export.php\'">Export</button>';
             echo '</div>';
 
             echo '<div class="table-responsive-sm tab">';

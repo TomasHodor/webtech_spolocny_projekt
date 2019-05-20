@@ -11,8 +11,7 @@ if ($conn->connect_error) {
 }
 $conn->set_charset("utf8");
 
-function csvToTable2($csvText, $delim = ";")
-{
+function csvToTable2($csvText, $delim = ";") {
     $table = array();
     $headers = explode($delim, $csvText[0]);
     $headers[sizeof($headers)-1] = substr($headers[sizeof($headers)-1], 0, -2);
@@ -27,6 +26,16 @@ function csvToTable2($csvText, $delim = ";")
         }
     }
     return $table;
+}
+
+function updateMailWithValues($mailText, $data, $value, $sender) {
+    $finalMail = $mailText;
+    for ($i = 0; $i < sizeof($data);$i++) {
+        $finalMail = str_replace('{{'.$data[$i].'}}', $value[$data[$i]], $finalMail);
+    }
+    $finalMail = str_replace('{{sender}}', $sender, $finalMail);
+
+    return $finalMail;
 }
 
 echo '<!DOCTYPE html>';
@@ -123,12 +132,11 @@ if($_GET["lang"] == "en") {
         $sql = "SELECT * FROM Template";
         $result = $conn->query($sql);
         if ($result->num_rows) {
-            $row = $result->fetch_assoc();
+            $number = 1;
             while($row = $result->fetch_assoc()) {
-                echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Template'.$row["id_template"].'</option>';
+                echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Template'.$number++.'</option>';
             }
         }
-        $conn->close();
         echo '</select>';
         echo '</div>';
         echo '</div>';
@@ -150,13 +158,22 @@ if($_GET["lang"] == "en") {
         echo '<div class="form-group row">';
         echo '<label for="sender" class="col-sm-4 col-form-label">Sender</label>';
         echo '<div class="col-sm-8">';
-        echo '<input type="email" class="form-control" id="sender" name="sender">';
+        echo '<input type="text" class="form-control" id="sender" name="sender">';
         echo '</div>';
         echo '</div>';
         echo '<div class="form-group row">';
         echo '<label for="subject" class="col-sm-4 col-form-label">Subject</label>';
         echo '<div class="col-sm-8">';
         echo '<input type="text" class="form-control" id="subject" name="subject">';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<label for="subject" class="col-sm-4 col-form-label">Message</label>';
+        echo '<div class="col-sm-4">';
+        echo '<textarea class="form-control" oninput="updateHtml(event)" style="width: height: 350px;"></textarea>';
+        echo '</div>';
+        echo '<div class="col-sm-4">';
+        echo '<iframe class="form-control" id="iframe" style="height: 350px;"></iframe>';
         echo '</div>';
         echo '</div>';
         echo '<div class="form-group row">';
@@ -172,7 +189,6 @@ if($_GET["lang"] == "en") {
         echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
         echo '<tr><th scope="col">Date sent</th>';
         echo '<th scope="col">Name</th>';
-        echo '<th scope="col">Email</th>';
         echo '<th scope="col">Subject</th>';
         echo '<th scope="col">Template ID</th></tr>';
         echo '</thead>';
@@ -180,16 +196,13 @@ if($_GET["lang"] == "en") {
         $sql = "SELECT * FROM History";
         $result = $conn->query($sql);
         if ($result->num_rows) {
-            $row = $result->fetch_assoc();
             while($row = $result->fetch_assoc()) {
                 echo '<tr><td>'.$row["date"].'</td>';
                 echo '<td>'.$row["sender"].'</td>';
-                echo '<td></td>';
                 echo '<td>'.$row["subject"].'</td>';
                 echo '<td>'.$row["template"].'</td></tr>';
             }
         }
-        $conn->close();
         echo '</tbody>';
         echo '</table>';
         echo '</div>';
@@ -292,12 +305,11 @@ else {
             $sql = "SELECT * FROM Template";
             $result = $conn->query($sql);
             if ($result->num_rows) {
-                $row = $result->fetch_assoc();
+                $number = 1;
                 while($row = $result->fetch_assoc()) {
-                    echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Šablóna'.$row["id_template"].'</option>';
+                    echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Šablóna'.$number++.'</option>';
                 }
             }
-            $conn->close();
             echo '</select>';
             echo '</div>';
             echo '</div>';
@@ -319,7 +331,7 @@ else {
             echo '<div class="form-group row">';
             echo '<label for="sender" class="col-sm-4 col-form-label">Odosielateľ</label>';
             echo '<div class="col-sm-8">';
-            echo '<input type="email" class="form-control" id="sender" name="sender">';
+            echo '<input type="text" class="form-control" id="sender" name="sender">';
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
@@ -329,19 +341,27 @@ else {
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
+            echo '<label for="subject" class="col-sm-4 col-form-label">Správa</label>';
+            echo '<div class="col-sm-4">';
+            echo '<textarea class="form-control" oninput="updateHtml(event)" style="height: 350px;"></textarea>';
+            echo '</div>';
+            echo '<div class="col-sm-4">';
+            echo '<iframe class="form-control" id="iframe" style="height: 350px;"></iframe>';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
             echo '<div class="col-sm-12">';
             echo '<input type="submit" class="btn btn-primary" name="sendemail" value="Poslať">';
             echo '</div>';
             echo '</div>';
             echo '</form>';
-            echo '<div class="table-responsive-sm tab">';
 
+            echo '<div class="table-responsive-sm tab">';
             echo '<h3>Odoslané maily</h3>';
             echo '<table class="table table-hover table-sm">';
             echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
             echo '<tr><th scope="col">Dátum odoslania</th>';
             echo '<th scope="col">Meno</th>';
-            echo '<th scope="col">Email</th>';
             echo '<th scope="col">Názov predmetu správy</th>';
             echo '<th scope="col">ID použitej šablóny</th></tr>';
             echo '</thead>';
@@ -349,16 +369,13 @@ else {
             $sql = "SELECT * FROM History";
             $result = $conn->query($sql);
             if ($result->num_rows) {
-                $row = $result->fetch_assoc();
                 while($row = $result->fetch_assoc()) {
                     echo '<tr><td>'.$row["date"].'</td>';
                     echo '<td>'.$row["sender"].'</td>';
-                    echo '<td></td>';
                     echo '<td>'.$row["subject"].'</td>';
                     echo '<td>'.$row["template"].'</td></tr>';
                 }
             }
-            $conn->close();
             echo '</tbody>';
             echo '</table>';
             echo '</div>';
@@ -428,6 +445,9 @@ if (isset($_POST["sendemail"])) {
         default:
             $delimeter2 = ";"; break;
     }
+    $template = $_POST['sablona'];
+    $sender = $_POST['sender'];
+    $subject = $_POST["subject"];
 
     if (in_array($imageFileType, $valid_files) || $_FILES["subor2"]['error'] > 0) {
         $file = file($_FILES["subor2"]["tmp_name"]);
@@ -435,35 +455,53 @@ if (isset($_POST["sendemail"])) {
         $header = explode($delimeter2, $file[0]);
         $header[sizeof($header)-1] = substr($header[sizeof($header)-1], 0, -2);
 
-        $sql = "SELECT * FROM Template";
-        $result = $conn->query($sql);
-        if ($result->num_rows) {
-            $row = $result->fetch_assoc();
-        }
         $table = csvToTable2($file, $delimeter2);
+
         foreach ($table as $value => $line) {
             //vymazat poslednemu zaznamu v tabulke ' \n', co je na konci
             if (substr($table[$value][$header[sizeof($header)-1]],-1) == "\n") {
                 $table[$value][$header[sizeof($header)-1]] = substr($table[$value][$header[sizeof($header)-1]], 0, -2);
             }
-            var_dump($table[$value][$header[sizeof($header)-1]]); echo "<br>";
+        }
+
+        $sql = "SELECT * FROM Template WHERE Template.id_template = ".$template;
+        $result = $conn->query($sql);
+        if ($result->num_rows) {
+            $row = $result->fetch_assoc();
         }
 
         foreach ($table as $valueKey => $value) {
 
             $to = $value["email"];
-            $subject = $_POST["subject"];
-            $message = 'hello';
+            $message = $row["start"] . "\n" . $row["core"] . "\n" . $row["end"];
+            $message = updateMailWithValues($message, $header, $value, $sender);
+            var_dump($message);echo "<br>";
             $headers = 'From: webmaster@example.com' . "\r\n" .
                 'Reply-To: webmaster@example.com' . "\r\n" .
                 'X-Mailer: PHP/' . phpversion();
 
+            date_default_timezone_set('UTC');
+            $date = date('Y-m-d');
+            $sql = "INSERT INTO History(id_history, date, template, sender, subject) " .
+                "VALUES (NULL, '$date', $template, '$sender','$subject')";
+            //if ($conn->query($sql) === TRUE) {
+            //echo "Email bol poslany";echo "<br>";
+
+            //}
             //mail($to, $subject, $message, $headers);
         }
     }
 }
 ?>
-</
+<script>
+    function updateHtml(text) {
+        var textarea = $("textarea")[0];
+
+        var iframe = document.getElementById("iframe");
+        var ifel = iframe.contentWindow.document.getElementsByTagName("html")[0];
+        ifel.innerHTML = textarea.value;
+    }
+</script>
 <?php
 echo '</body>';
 echo '</html>';

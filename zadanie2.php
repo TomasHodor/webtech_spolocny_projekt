@@ -63,47 +63,107 @@ if ($_GET["lang"] == "en") {
     </nav>
     <h2>Teams</h2>';
 
-    $type = 'admin';
-
-    switch (/*getAuthentication()->*/
-    $type) {
+    $type = 'student';
+    switch (/*getAuthentication()->*/$type) {
         case 'student':
             //student
+            $mail = getAuthentication()->mail;
+            $mail = 'aa@aa.aa';
+
+            if(isset($_POST)){
+                $score = 0;
+                foreach ($_POST as $id => $post) {
+                    $score += $post;
+                }
+
+                $max = $db->query('SELECT `max` from persons where 
+                      `year` = ? AND 
+                      email = ? AND 
+                      subject = ?',
+                    [
+                        '2018',
+                        $mail,
+                        'WT2',
+                    ])->fetchArray();
+
+
+                foreach ($_POST as $id => $post){
+
+
+                    $status = $db->query('UPDATE persons SET 
+                      points = ? 
+                      where `year` = ? AND 
+                      student_id = ? AND 
+                      subject = ?',
+
+                        [
+                            $post,
+                            '2018',
+                            $id,
+                            'WT2',
+                        ])->affectedRows();
+                }
+
+            }
+
+
+            $person = $db->query('SELECT `name`, `max`, team from persons where 
+                      `year` = ? AND 
+                      email = ? AND 
+                      subject = ?',
+                [
+                    '2018',
+                    $mail,
+                    'WT2',
+                ])->fetchArray();
+
+            $members = $db->query('SELECT `name`, points, student_id, agree from persons where 
+                      `year` = ? AND 
+                      team = ? AND 
+                      subject = ?',
+                [
+                    '2018',
+                    $person['team'],
+                    'WT2',
+                ])->fetchAll();
+
+            $rest = $person['max'];
+            foreach ($members as $member){
+                $rest -= $member['points'];
+            }
+
 
             //ukazka pohladu kapitana, treba doplnit udaje
             echo '<form action="#" method="POST">';
             echo '<h3>WT2 - team</h3>';
-            echo '<h4>Points for team: 40</h4>';
-            echo '<div class="form-group row">';
-            echo '<label for="clen1" class="col-sm-6 col-form-label">Peter Kalanin</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="clen1" name="clen1" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="clen2" class="col-sm-6 col-form-label">Peter Sebest</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="clen2" name="clen2" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="clen3" class="col-sm-6 col-form-label">Alex Kholodov</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="clen3" name="clen3" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="clen4" class="col-sm-6 col-form-label">Tomas Hodor</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="clen4" name="clen4" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="form-group row">';
-            echo '<label for="clen5" class="col-sm-6 col-form-label">Friderika Benkoova</label>';
-            echo '<div class="col-sm-6">';
-            echo '<input type="number" class="form-control" id="clen5" name="clen5" min="0" max="40">';
-            echo '</div>';
-            echo '</div>';
+            echo '<h4>Points for team: '. $rest  .'</h4>';
+
+            foreach ($members as $member) {
+                echo '<div class="form-group row">';
+                echo '<label for="clen1" class="col-sm-6 col-form-label">'.$member['name'].'</label>';
+                echo '<div class="col-sm-6">';
+                if($rest > 0){
+                    echo '<input type="number" class="form-control" id="'.$member['student_id'].'" name="'.$member['student_id'].'" min="0" max="40" value="'.$member['points'].'">';
+                    switch ($member['agree']){
+                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                    }
+                }else if($member['agree'] === 3){
+                    echo 'admin agreed to this mark (' . $member['points'] . ')';
+                    switch ($member['agree']){
+                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                    }
+
+                }
+                echo '</div>';
+                echo '</div>';
+
+            }
             echo '<div class="form-group row">';
             echo '<div class="col-sm-12">';
             echo '<input type="submit" class="btn btn-primary" value="Save">';
@@ -215,39 +275,6 @@ if ($_GET["lang"] == "en") {
                         'WT2',
                     ])->affectedRows();
             }
-
-//            if(isset($_REQUEST) && $_REQUEST['action'] === 'export'){
-//                $people = $db->query('SELECT student_id, `name`, points FROM persons  where
-//                      `year` = ? AND
-//                      subject = ?',
-//                    [
-//                        '2018',
-//                        'WT2',
-//                    ])->fetchAll();
-//
-//                // Creates a new csv file and store it in tmp directory
-//                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-//                header("Content-type: text/csv");
-//                header("Content-disposition: attachment; filename = export.csv");
-//                $csv = fopen('./export.csv', 'w');
-//                $line = 'ID;Name;Points
-//                ';
-//                fwrite($csv, $line);
-//                foreach ($people as $person){
-//                    $line = $person['student_id'] . ';' . $person['name'] . ';' . $person['points'] . '
-//                    ';
-//                    fwrite($csv, $line);
-//                }
-//                fclose($csv);
-//                exit();
-//
-//                // output headers so that the file is downloaded rather than displayed
-//                readfile("./export.csv");
-//            }
-
-
-
-
 
 
             echo '
@@ -433,7 +460,7 @@ if ($_GET["lang"] == "en") {
             echo '</div>';
             break;
         default:
-            header('Location: index.php?lang=en&notallowed');
+            //header('Location: index.php?lang=en&notallowed');
             break;
     }
 } else {
@@ -492,6 +519,7 @@ if ($_GET["lang"] == "en") {
     echo '</nav>';
     echo '<h2>Tímy</h2>';
 
+    echo getAuthentication()->type;
     switch (getAuthentication()->type) {
         case 'student':
             //student
@@ -711,7 +739,7 @@ if ($_GET["lang"] == "en") {
             echo '</div>';
             break;
         default:
-            header('Location: index.php?notallowed');
+            //header('Location: index.php?notallowed');
             break;
     }
 }

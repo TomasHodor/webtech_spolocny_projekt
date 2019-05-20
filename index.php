@@ -18,7 +18,8 @@ if($_GET["lang"] == "en") {
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
   echo '<meta http-equiv="X-UA-Compatible" content="ie=edge">';
   echo '<title>Final project</title>';
-  echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+  // echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+  require_once("links.php");
   echo '<link rel="stylesheet" type="text/css" media="screen" href="main.css" />';
   echo '<link rel="stylesheet" type="text/css" media="print" href="print.css">';
   echo '<link href="https://fonts.googleapis.com/css?family=Lobster|Roboto" rel="stylesheet">';
@@ -40,19 +41,19 @@ if($_GET["lang"] == "en") {
   echo '</li>';
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie1.php?lang=en">Results</a>';
-  echo '</li>';
+  echo '</li>'; 
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie2.php?lang=en">Teams</a>';
-  echo '</li>';
+  echo '</li>';  
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie3.php?lang=en">Passwords</a>';
   echo '</li>';
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="tasks.php?lang=en">Tasks</a>';
-  echo '</li>';
+  echo '</li>';    
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="documentation.php?lang=en">Documentation</a>';
-  echo '</li>';
+  echo '</li>'; 
   echo '</ul>';
   echo '<ul class="nav navbar-nav navbar-right">';
   echo '<li class="nav-item">';
@@ -106,19 +107,19 @@ else {
   echo '</li>';
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie1.php?lang=sk">Výsledky</a>';
-  echo '</li>';
+  echo '</li>'; 
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie2.php?lang=sk">Tímy</a>';
-  echo '</li>';
+  echo '</li>';  
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="zadanie3.php?lang=sk">Heslá</a>';
   echo '</li>';
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="tasks.php?lang=sk">Úlohy</a>';
-  echo '</li>';
+  echo '</li>';    
   echo '<li class="nav-item">';
   echo '<a class="nav-link" href="documentation.php?lang=sk">Dokumentácia</a>';
-  echo '</li>';
+  echo '</li>'; 
   echo '</ul>';
   echo '<ul class="nav navbar-nav navbar-right">';
   echo '<li class="nav-item">';
@@ -129,7 +130,7 @@ else {
   echo '</li>';
   echo '</ul>';
   echo '</div>';
-  echo '</nav>';
+  echo '</nav>';  
   if (isset($_GET['notallowed'])) {
     echo '<h2>Pre danú operáciu nemáte oprávnenie.</h2>';
   }
@@ -143,4 +144,3 @@ else {
   echo '</body>';
   echo '</html>';
 }
-?>

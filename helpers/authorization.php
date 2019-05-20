@@ -1,4 +1,3 @@
-
 <?php
 require_once("config.php");
 require_once("authentication.php");
@@ -24,13 +23,14 @@ function redirectUnathorized()
 /**
  * Funkcia, ktorej ulohou je zistit pristupove prava na jednotlive stranky. V pripade, ze pouzivatel nema opravnenie pozerat stranku je presmerovany
  * @author Peter Kalanin
- *
+ * 
  * @return String|null
  */
 function authorize()
 {
   $url = getClearUrl();
   $auth = getAuthentication();
+  // echo $url;
 
   if (!getAuthentication()) {
     if ($url != "login.php") {
@@ -61,7 +61,7 @@ function authorize()
 /**
  * Vrati cistu URL adresu
  * @author Peter Kalanin
- *
+ * 
  * @return String URL adresa
  */
 function getClearUrl()

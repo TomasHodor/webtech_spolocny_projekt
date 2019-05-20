@@ -1,0 +1,4 @@
+Priečinku "files" priraďte všetky práva
+Postup pre Linux:
+
+$ sudo chmod 777 /files

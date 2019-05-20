@@ -1,0 +1,6 @@
+ID;meno;Email;login;heslo;verejnaIP;privatnaIP;ssh;http;https;misc1;misc2
+12345;Priez1 Meno1;xpriez1@is.stuba.sk;xpriez1;nbu123;147.175.121.210;192.168.0.1;2201;8001;4401;9001;1901
+24349;Priez2 Meno2;xpriez2@is.stuba.sk;xpriez2;nbu124;147.175.121.210;192.168.0.2;2202;8002;4402;9002;1902
+56732;Priez3 Meno3;xpriez3@is.stuba.sk;xpriez3;nbu125;147.175.121.210;192.168.0.3;2203;8003;4403;9003;1903
+12346;Priez4 Meno4;xpriez4@is.stuba.sk;xpriez4;nbu126;147.175.121.210;192.168.0.4;2204;8004;4404;9004;1904
+44445;Priez5 Meno5;xpriez5@is.stuba.sk;xpriez5;nbu127;147.175.121.210;192.168.0.5;2205;8005;4405;9005;1905

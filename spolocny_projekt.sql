@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
--- Hostiteľ: localhost:3306
--- Čas generovania: Po 13.Máj 2019, 09:11
--- Verzia serveru: 5.7.25-0ubuntu0.18.04.2
--- Verzia PHP: 7.2.15-0ubuntu0.18.04.1
+-- Host: 127.0.0.1
+-- Generation Time: May 20, 2019 at 09:34 AM
+-- Server version: 10.1.38-MariaDB
+-- PHP Version: 7.2.17
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,13 +19,26 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Databáza: `spolocny_projekt`
+-- Database: `zav_zad`
 --
 
 -- --------------------------------------------------------
 
 --
--- Štruktúra tabuľky pre tabuľku `users`
+-- Table structure for table `hodnotenie_predmetu`
+--
+
+CREATE TABLE `hodnotenie_predmetu` (
+  `id_user` int(11) NOT NULL,
+  `id_predmet` int(3) NOT NULL,
+  `meno` varchar(26) COLLATE utf8_slovak_ci NOT NULL,
+  `json_object` varchar(256) COLLATE utf8_slovak_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -35,15 +50,45 @@ CREATE TABLE `users` (
   `login` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Kľúče pre exportované tabuľky
+-- Table structure for table `zoznam_predmetov`
+--
+
+CREATE TABLE `zoznam_predmetov` (
+  `id_predmet` int(3) NOT NULL,
+  `nazov` varchar(20) COLLATE utf8_slovak_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Indexy pre tabuľku `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `zoznam_predmetov`
+--
+ALTER TABLE `zoznam_predmetov`
+  ADD PRIMARY KEY (`id_predmet`),
+  ADD UNIQUE KEY `nazov` (`nazov`),
+  ADD UNIQUE KEY `id_predmet` (`id_predmet`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `zoznam_predmetov`
+--
+ALTER TABLE `zoznam_predmetov`
+  MODIFY `id_predmet` int(3) NOT NULL AUTO_INCREMENT;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

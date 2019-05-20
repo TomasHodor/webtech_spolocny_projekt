@@ -2,8 +2,16 @@
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 require_once("helpers/passwordGenerator.php");
+require_once("config.php");
 
-function csvToTable($csvText, $delim = ";")
+$conn = new mysqli(servername, username, password, database);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$conn->set_charset("utf8");
+
+function csvToTable2($csvText, $delim = ";")
 {
     $table = array();
     $headers = explode($delim, $csvText[0]);
@@ -112,10 +120,15 @@ if($_GET["lang"] == "en") {
         echo '<label for="oddelovac" class="col-sm-4 col-form-label">Template</label>';
         echo '<div class="col-sm-8">';
         echo '<select class="form-control" id="sablona" name="sablona">';
-        for ($i = 0;$i < 1 ; $i++) {
-            echo '<option name="ciarka" value="ciarka">,</option>';
-            echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+        $sql = "SELECT * FROM Template";
+        $result = $conn->query($sql);
+        if ($result->num_rows) {
+            $row = $result->fetch_assoc();
+            while($row = $result->fetch_assoc()) {
+                echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Template'.$row["id_template"].'</option>';
+            }
         }
+        $conn->close();
         echo '</select>';
         echo '</div>';
         echo '</div>';
@@ -123,6 +136,15 @@ if($_GET["lang"] == "en") {
         echo '<label for="subor2" class="col-sm-4 col-form-label">CSV file</label>';
         echo '<div class="col-sm-8">';
         echo '<input type="file" class="form-control" id="subor2" name="subor2">';
+        echo '</div>';
+        echo '</div>';
+        echo '<div class="form-group row">';
+        echo '<label for="oddelovac2" class="col-sm-4 col-form-label">Separator</label>';
+        echo '<div class="col-sm-8">';
+        echo '<select class="form-control" id="oddelovac2" name="oddelovac2">';
+        echo '<option name="ciarka" value="ciarka">,</option>';
+        echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+        echo '</select>';
         echo '</div>';
         echo '</div>';
         echo '<div class="form-group row">';
@@ -155,21 +177,19 @@ if($_GET["lang"] == "en") {
         echo '<th scope="col">Template ID</th></tr>';
         echo '</thead>';
         echo '<tbody>';
-        /*echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 1</td>';
-        echo '<td>xstud1@stuba.sk</td>';
-        echo '<td>Access data</td>';
-        echo '<td>1</td></tr>';
-        echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 2</td>';
-        echo '<td>xstud2@stuba.sk</td>';
-        echo '<td>Access data</td>';
-        echo '<td>1</td></tr>';
-        echo '<tr><td>15. 5. 2019</td>';
-        echo '<td>Student 3</td>';
-        echo '<td>xstud3@stuba.sk</td>';
-        echo '<td>Access data</td>';
-        echo '<td>1</td></tr>';*/
+        $sql = "SELECT * FROM History";
+        $result = $conn->query($sql);
+        if ($result->num_rows) {
+            $row = $result->fetch_assoc();
+            while($row = $result->fetch_assoc()) {
+                echo '<tr><td>'.$row["date"].'</td>';
+                echo '<td>'.$row["sender"].'</td>';
+                echo '<td></td>';
+                echo '<td>'.$row["subject"].'</td>';
+                echo '<td>'.$row["template"].'</td></tr>';
+            }
+        }
+        $conn->close();
         echo '</tbody>';
         echo '</table>';
         echo '</div>';
@@ -269,10 +289,15 @@ else {
             echo '<label for="oddelovac" class="col-sm-4 col-form-label">Šablóna</label>';
             echo '<div class="col-sm-8">';
             echo '<select class="form-control" id="sablona" name="sablona">';
-            for ($i = 0;$i < 1 ; $i++) {
-                echo '<option name="ciarka" value="ciarka">,</option>';
-                echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+            $sql = "SELECT * FROM Template";
+            $result = $conn->query($sql);
+            if ($result->num_rows) {
+                $row = $result->fetch_assoc();
+                while($row = $result->fetch_assoc()) {
+                    echo '<option name="'.$row["id_template"].'" value="'.$row["id_template"].'">Šablóna'.$row["id_template"].'</option>';
+                }
             }
+            $conn->close();
             echo '</select>';
             echo '</div>';
             echo '</div>';
@@ -280,6 +305,15 @@ else {
             echo '<label for="subor2" class="col-sm-4 col-form-label">CSV súbor</label>';
             echo '<div class="col-sm-8">';
             echo '<input type="file" class="form-control" id="subor2" name="subor2">';
+            echo '</div>';
+            echo '</div>';
+            echo '<div class="form-group row">';
+            echo '<label for="oddelovac2" class="col-sm-4 col-form-label">Oddeľovač</label>';
+            echo '<div class="col-sm-8">';
+            echo '<select class="form-control" id="oddelovac2" name="oddelovac2">';
+            echo '<option name="ciarka" value="ciarka">,</option>';
+            echo '<option name="bodkociarka" value="bodkociarka">;</option>';
+            echo '</select>';
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
@@ -312,21 +346,19 @@ else {
             echo '<th scope="col">ID použitej šablóny</th></tr>';
             echo '</thead>';
             echo '<tbody>';
-            /*echo '<tr><td>15. 5. 2019</td>';
-            echo '<td>Student 1</td>';
-            echo '<td>xstud1@stuba.sk</td>';
-            echo '<td>Prístupové údaje</td>';
-            echo '<td>1</td></tr>';
-            echo '<tr><td>15. 5. 2019</td>';
-            echo '<td>Student 2</td>';
-            echo '<td>xstud2@stuba.sk</td>';
-            echo '<td>Prístupové údaje</td>';
-            echo '<td>1</td></tr>';
-            echo '<tr><td>15. 5. 2019</td>';
-            echo '<td>Student 3</td>';
-            echo '<td>xstud3@stuba.sk</td>';
-            echo '<td>Prístupové údaje</td>';
-            echo '<td>1</td></tr>';*/
+            $sql = "SELECT * FROM History";
+            $result = $conn->query($sql);
+            if ($result->num_rows) {
+                $row = $result->fetch_assoc();
+                while($row = $result->fetch_assoc()) {
+                    echo '<tr><td>'.$row["date"].'</td>';
+                    echo '<td>'.$row["sender"].'</td>';
+                    echo '<td></td>';
+                    echo '<td>'.$row["subject"].'</td>';
+                    echo '<td>'.$row["template"].'</td></tr>';
+                }
+            }
+            $conn->close();
             echo '</tbody>';
             echo '</table>';
             echo '</div>';
@@ -359,12 +391,13 @@ if (isset($_POST["genPassword"])) {
         }
         $file = file($_FILES["subor"]["tmp_name"]);
         $header = explode($delimeter, $file[0]);
+        var_dump($header);
         $header[sizeof($header)-1] = substr($header[sizeof($header)-1], 0, -2);
         array_push($header,"heslo");
-        $table = csvToTable($file, $delimeter);
+        $table = csvToTable2($file, $delimeter);
         foreach ($table as $value => $line) {
-            if (substr($table[$value]["login"],-1) == "\n") {
-                $table[$value]["login"] = substr($table[$value]["login"], 0, -2);
+            if (substr($table[$value][$header[sizeof($header)-2]],-1) == "\n") {
+                $table[$value][$header[sizeof($header)-2]] = substr($table[$value][$header[sizeof($header)-2]], 0, -2);
             }
             $table[$value]["heslo"] = generatePassword(15);
         }
@@ -387,10 +420,34 @@ $target_file2 = basename($_FILES["subor2"]["name"]);
 $imageFileType = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
 
 if (isset($_POST["sendemail"])) {
+    switch($_POST['oddelovac2']) {
+        case "bodkociarka":
+            $delimeter2 = ";"; break;
+        case "ciarka":
+            $delimeter2 = ","; break;
+        default:
+            $delimeter2 = ";"; break;
+    }
+
     if (in_array($imageFileType, $valid_files) || $_FILES["subor2"]['error'] > 0) {
         $file = file($_FILES["subor2"]["tmp_name"]);
-        $header = explode($delimeter, $file[0]);
-        $header[0] = substr($header[0], 0, -2);
+
+        $header = explode($delimeter2, $file[0]);
+        $header[sizeof($header)-1] = substr($header[sizeof($header)-1], 0, -2);
+
+        $sql = "SELECT * FROM Template";
+        $result = $conn->query($sql);
+        if ($result->num_rows) {
+            $row = $result->fetch_assoc();
+        }
+        $table = csvToTable2($file, $delimeter2);
+        foreach ($table as $value => $line) {
+            //vymazat poslednemu zaznamu v tabulke ' \n', co je na konci
+            if (substr($table[$value][$header[sizeof($header)-1]],-1) == "\n") {
+                $table[$value][$header[sizeof($header)-1]] = substr($table[$value][$header[sizeof($header)-1]], 0, -2);
+            }
+            var_dump($table[$value][$header[sizeof($header)-1]]); echo "<br>";
+        }
 
         foreach ($table as $valueKey => $value) {
 

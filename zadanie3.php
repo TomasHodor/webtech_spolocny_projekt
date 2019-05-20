@@ -1,20 +1,3 @@
-<<<<<<< .merge_file_a16128
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-
-<body>
-
-</body>
-
-</html>
-=======
 <?php
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
@@ -206,6 +189,7 @@ if($_GET["lang"] == "en") {
         echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
         echo '<tr><th scope="col">Date sent</th>';
         echo '<th scope="col">Name</th>';
+        echo '<th scope="col">To</th>';
         echo '<th scope="col">Subject</th>';
         echo '<th scope="col">Template ID</th></tr>';
         echo '</thead>';
@@ -215,6 +199,7 @@ if($_GET["lang"] == "en") {
         if ($result->num_rows) {
             while($row = $result->fetch_assoc()) {
                 echo '<tr><td>'.$row["date"].'</td>';
+                echo '<td>'.$row["person"].'</td>';
                 echo '<td>'.$row["sender"].'</td>';
                 echo '<td>'.$row["subject"].'</td>';
                 echo '<td>'.$row["template"].'</td></tr>';
@@ -379,6 +364,7 @@ else {
             echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
             echo '<tr><th scope="col">Dátum odoslania</th>';
             echo '<th scope="col">Meno</th>';
+            echo '<th scope="col">Komu</th>';
             echo '<th scope="col">Názov predmetu správy</th>';
             echo '<th scope="col">ID použitej šablóny</th></tr>';
             echo '</thead>';
@@ -389,6 +375,7 @@ else {
                 while($row = $result->fetch_assoc()) {
                     echo '<tr><td>'.$row["date"].'</td>';
                     echo '<td>'.$row["sender"].'</td>';
+                    echo '<td>'.$row["person"].'</td>';
                     echo '<td>'.$row["subject"].'</td>';
                     echo '<td>'.$row["template"].'</td></tr>';
                 }
@@ -473,7 +460,6 @@ if (isset($_POST["sendemail"])) {
         $header[sizeof($header)-1] = substr($header[sizeof($header)-1], 0, -2);
 
         $table = csvToTable2($file, $delimeter2);
-
         foreach ($table as $value => $line) {
             //vymazat poslednemu zaznamu v tabulke ' \n', co je na konci
             if (substr($table[$value][$header[sizeof($header)-1]],-1) == "\n") {
@@ -492,20 +478,18 @@ if (isset($_POST["sendemail"])) {
             $to = $value["email"];
             $message = $row["start"] . "\n" . $row["core"] . "\n" . $row["end"];
             $message = updateMailWithValues($message, $header, $value, $sender);
-            var_dump($message);echo "<br>";
-            $headers = 'From: webmaster@example.com' . "\r\n" .
-                'Reply-To: webmaster@example.com' . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=iso-8859-1" . "\r\n";
+            $headers .= 'From: <'.$sender . ">\r\n" ;
 
+            mail($to, $subject, $message, $headers);
             date_default_timezone_set('UTC');
             $date = date('Y-m-d');
-            $sql = "INSERT INTO History(id_history, date, template, sender, subject) " .
-                "VALUES (NULL, '$date', $template, '$sender','$subject')";
-            //if ($conn->query($sql) === TRUE) {
-            //echo "Email bol poslany";echo "<br>";
-
-            //}
-            //mail($to, $subject, $message, $headers);
+            $sql = "INSERT INTO History(id_history, date, person, template, sender, subject) " .
+                "VALUES (NULL, '$date', '$to',$template, '$sender','$subject')";
+            if ($conn->query($sql) === TRUE) {
+                echo "Email bol poslany";echo "<br>";
+            }
         }
     }
 }
@@ -523,4 +507,3 @@ if (isset($_POST["sendemail"])) {
 echo '</body>';
 echo '</html>';
 ?>
->>>>>>> .merge_file_a12468

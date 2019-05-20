@@ -483,7 +483,9 @@ echo '        <input type="file" name="CSV_subor" id="fileToUpload"><br>';
 echo '        <label for="oddelovac">Oddelovac: </label>';
 echo '        <input type="radio" name="oddelovac" value="," checked> ciarka [,]';
 echo '        <input type="radio" name="oddelovac" value=";"> bodkociarka [;]<br>';
-echo '        <input type ="submit"  name="upload" >';
+echo '        <input type ="submit"  name="upload" value="upload CSV" ><br>';
+echo '        <input type ="submit"  name="pdf" value="predmety.PDF">';
+echo '        <input type ="submit"  name="delete" value="vymaz predmet">';
 echo '    </form>';
 echo '</div>';
 
@@ -495,66 +497,114 @@ else {
     echo "osobe JE authetifikovana <BR>";
     $auth_type = authorize();
     echo $auth_type;//localhost for local debuging
-    // todo change to admin
-    if($auth_type == 'student' || $_SERVER['HTTP_HOST'] ='localhost' ){
-        if(isset($_POST["upload"])) {
-            echo "form is set \n";
-            $target_file =  basename($_FILES["CSV_subor"]["name"]);
-            $csv_file = file_get_contents($_FILES['CSV_subor']['tmp_name']);
-            //todo test loaded file and skontroluj skryte znaky
-            $delimeter = $_POST['oddelovac'];
-            $csv_table_array = csvToTable($csv_file, $delimeter);
-            //
-            //insert data to db\
-            $id_predmet = 0;
-            $predmet = $_POST["nazov_predmetu"];
-            $checkDB = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$predmet' ";
-            $data =  $conn->query($checkDB);
-            $res_num = $data->num_rows;
+    if(isset($_POST["upload"])) {
+        echo "form is set \n";
+        $target_file =  basename($_FILES["CSV_subor"]["name"]);
+        $csv_file = file_get_contents($_FILES['CSV_subor']['tmp_name']);
+        //todo test loaded file and skontroluj skryte znaky
+        $delimeter = $_POST['oddelovac'];
+        $csv_table_array = csvToTable($csv_file, $delimeter);
+        //
+        //insert data to db\
+        $id_predmet;
+        $predmet = $_POST["nazov_predmetu"];
+        $checkDB = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$predmet' ";
+        $data =  $conn->query($checkDB);
+        $res_num = $data->num_rows;
 
 //            pozri ci existuje zaznam
-            if($res_num == 0){
-                $predmet_insert = "INSERT INTO `zoznam_predmetov` (`id_predmet`, `nazov`) VALUES (NULL, '$predmet');";
-                $res = $conn->query($predmet_insert);
-                //get last id
-                $id_predmet = $conn->insert_id;
-            }
-            else {
-                //predmet exists, get id
-                $row =  $data->fetch_assoc();
-                $id_predmet = $row['id_predmet'];
-            }
-
-            //vloz data do DB z csv_array
-            $stmt = $conn->prepare("INSERT INTO `hodnotenie_predmetu` (`id_user`, `id_predmet`, `meno`, `json_object`) VALUES (?,?,?,?)");
-
-            foreach ($csv_table_array as $lineKey => $values) {
-                $stmt->bind_param("iiss", $id_user, $meno, $id_predmet, $JSONobj);
-
-                $id_user = $values['ID'];
-                $meno = $values['meno'];
-                $obj = new stdClass();
-
-                foreach ($values as $valueKey => $value) {
-                    switch ($valueKey) {
-                        case 'ID' :
-                        case 'meno' :
-                            break;
-                        default :
-                            $obj->$valueKey = $value;
-                    }
-                }
-                $JSONobj = json_encode($obj);
-                $stmt->execute();
-                $stmt->close();
-            }
-
+        if($res_num == 0){
+            $predmet_insert = "INSERT INTO `zoznam_predmetov` (`id_predmet`, `nazov`) VALUES (NULL, '$predmet');";
+            $res = $conn->query($predmet_insert);
+            //get last id
+            $id_predmet = $conn->insert_id;
         }
         else {
-            echo " upload form is not set \n";
+            //predmet exists, get id
+            $row =  $data->fetch_assoc();
+            $id_predmet = $row['id_predmet'];
+        }
+
+        //vloz data do DB z csv_array
+        $stmt = $conn->prepare("INSERT INTO `hodnotenie_predmetu` (`id_user`, `id_predmet`, `meno`, `json_object`) VALUES (?,?,?,?)");
+
+        foreach ($csv_table_array as $lineKey => $values) {
+            $stmt->bind_param("iiss", $id_user,$id_predmet, $meno, $JSONobj);
+
+            $id_user = $values['ID'];
+            $meno = $values['meno'];
+            $obj = new stdClass();
+
+            foreach ($values as $valueKey => $value) {
+                switch ($valueKey) {
+                    case 'ID' :
+                    case 'meno' :
+                        break;
+                    default :
+                        $obj->$valueKey = $value;
+                }
+            }
+            $JSONobj = json_encode($obj);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+    }
+    elseif (isset($_POST["pdf"])){
+        //GET ALL DATA FROM DB
+        $DB_predmety = "select * from `zoznam_predmetov` ";
+        $DB_result = $conn->query($DB_predmety);
+        $predmety = [];
+        while ($row = $DB_result->fetch_assoc()) {
+            $predmety[$row['id_predmet']] =  $row['nazov'];
+        }
+        var_dump($predmety) ;
+
+        $data = [];
+
+        //get data for esch line
+        foreach ($predmety as $key => $value){
+            $DB_predmety = "select * from SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = $key";
+            $DB_result = $conn->query($DB_predmety);
+            while ($row = $DB_result->fetch_assoc()) {
+
+                //todo generate pdf
+                $identity = array( 'id_user' => $row['id_user'], 'meno' => $row['meno']);
+                //decode object change to array and merge with identity
+                $obj = json_decode($row['json_object']);
+                $znamky = [];
+
+                foreach ($obj as $key => $value){
+                    $znamky[$key] = $value;
+                }
+                $data[$value] =  array_merge($identity, $znamky);
+            }
+            var_dump($data);
+        }
+    }
+    elseif (isset($_POST["delete"])){
+        $nazov = $_POST["nazov_predmetu"];
+        $DB_id = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";
+        $DB = $conn->query($DB_id);
+        $id_predmet = intval($DB->fetch_assoc()['id_predmet']);
+
+        if(!$id_predmet){
+            echo "predmet nieje v DB \n";
+        }else {
+            //vymaz z DB predmety, a hodnotenia
+            $DB_xPredmet = "DELETE FROM `zoznam_predmetov` WHERE `id_predmet` = $id_predmet;";
+            $DB_xHosnotenie = "DELETE FROM `hodnotenie_predmetu` WHERE `id_predmet` = $id_predmet;";
+            $tmp = $DB_xPredmet.$DB_xHosnotenie;
+            $conn->multi_query($DB_xPredmet.$DB_xHosnotenie);
         }
 
 
+    }
+    else {
+        echo " upload form is not set \n";
+    }
+    // todo change to admin
+    if($auth_type == 'student' || $_SERVER['HTTP_HOST'] ='localhost' ){
 
     }
 }

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.6.6deb5
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 20, 2019 at 09:34 AM
--- Server version: 10.1.38-MariaDB
--- PHP Version: 7.2.17
+-- Hostiteľ: localhost:3306
+-- Čas generovania: Po 13.Máj 2019, 09:11
+-- Verzia serveru: 5.7.25-0ubuntu0.18.04.2
+-- Verzia PHP: 7.2.15-0ubuntu0.18.04.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,12 +19,24 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `zav_zad`
+-- Databáza: `spolocny_projekt`
+--
+-- Table structure for table `persons`
 --
 
--- --------------------------------------------------------
-
---
+CREATE TABLE `persons` (
+  `id` int(11) NOT NULL,
+  `student_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `team` int(11) NOT NULL,
+  `points` int(11) NOT NULL,
+  `agree` int(11) DEFAULT NULL,
+  `max` int(11) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `year` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- Table structure for table `hodnotenie_predmetu`
 --
 
@@ -38,7 +50,7 @@ CREATE TABLE `hodnotenie_predmetu` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Štruktúra tabuľky pre tabuľku `users`
 --
 
 CREATE TABLE `users` (
@@ -50,10 +62,8 @@ CREATE TABLE `users` (
   `login` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `zoznam_predmetov`
+-- Kľúče pre exportované tabuľky
 --
 
 CREATE TABLE `zoznam_predmetov` (
@@ -62,8 +72,10 @@ CREATE TABLE `zoznam_predmetov` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
 
 --
--- Indexes for dumped tables
+-- Indexes for table `persons`
 --
+ALTER TABLE `persons`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `users`
@@ -71,6 +83,15 @@ CREATE TABLE `zoznam_predmetov` (
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `persons`
+--
+ALTER TABLE `persons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 --
 -- Indexes for table `zoznam_predmetov`
 --

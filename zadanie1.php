@@ -2,6 +2,8 @@
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 require_once("helpers/csv.php");
+require_once("lib/mdnf/src/mpdf/Mpdf.php");
+
 
 
 ?>
@@ -530,7 +532,7 @@ else {
 
         foreach ($csv_table_array as $lineKey => $values) {
             $stmt->bind_param("iiss", $id_user,$id_predmet, $meno, $JSONobj);
-
+            //todo if user exist (cannot insert) update
             $id_user = $values['ID'];
             $meno = $values['meno'];
             $obj = new stdClass();
@@ -546,8 +548,8 @@ else {
             }
             $JSONobj = json_encode($obj);
             $stmt->execute();
-            $stmt->close();
         }
+        $stmt->close();
 
     }
     elseif (isset($_POST["pdf"])){
@@ -564,8 +566,11 @@ else {
 
         //get data for esch line
         foreach ($predmety as $key => $value){
-            $DB_predmety = "select * from SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = $key";
+            $DB_predmety = "SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = ".intval($key);
             $DB_result = $conn->query($DB_predmety);
+            //data[pred1 = users[user1=>[znamky1],...usern=>[znamky2]]
+            $data[$value] = array();
+
             while ($row = $DB_result->fetch_assoc()) {
 
                 //todo generate pdf
@@ -574,13 +579,16 @@ else {
                 $obj = json_decode($row['json_object']);
                 $znamky = [];
 
-                foreach ($obj as $key => $value){
-                    $znamky[$key] = $value;
+                foreach ($obj as $key2 => $value2){
+                    $znamky[$key2] = $value2;
                 }
-                $data[$value] =  array_merge($identity, $znamky);
+                $data[$value][$identity['id_user']]=  array_merge(array($identity['meno']) , $znamky);
             }
-            var_dump($data);
+
         }
+        var_dump($data);
+        //todo generate pdf
+        $mpdf=new mPDF();
     }
     elseif (isset($_POST["delete"])){
         $nazov = $_POST["nazov_predmetu"];

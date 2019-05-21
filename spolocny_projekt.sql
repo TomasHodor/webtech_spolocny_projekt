@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 19, 2019 at 09:44 PM
+-- Generation Time: May 21, 2019 at 10:55 PM
 -- Server version: 5.7.26-0ubuntu0.16.04.1
 -- PHP Version: 5.6.40-5+ubuntu16.04.1+deb.sury.org+1
 
@@ -37,8 +37,20 @@ CREATE TABLE `persons` (
   `agree` int(11) DEFAULT NULL,
   `max` int(11) NOT NULL,
   `subject` varchar(255) NOT NULL,
-  `year` varchar(255) NOT NULL
+  `year` varchar(255) NOT NULL,
+  `leader` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `persons`
+--
+
+INSERT INTO `persons` (`id`, `student_id`, `name`, `email`, `password`, `team`, `points`, `agree`, `max`, `subject`, `year`, `leader`) VALUES
+(96, '12345', 'AAq', 'aa@aa.aa', '111', 1, 10, 3, 20, 'WT2', '2018', 'aa@aa.aa'),
+(97, '22345', 'AAw', 'a2@aa.aa', '111', 1, 10, 3, 20, 'WT2', '2018', 'aa@aa.aa'),
+(98, '32345', 'AAe', 'a3@aa.aa', '111', 2, 30, 3, 150, 'WT2', '2018', 'a3@aa.aa'),
+(99, '42345', 'AAr', 'a4@aa.aa', '', 2, 30, 1, 150, 'WT2', '2018', 'a3@aa.aa'),
+(100, '52345', 'AAt', 'a5@aa.aa', '111', 3, 0, NULL, 0, 'WT2', '2018', 'a5@aa.aa');
 
 -- --------------------------------------------------------
 

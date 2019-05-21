@@ -45,10 +45,12 @@ function updateMailWithValues($mailText, $data, $sender)
   <div class="container">
     <div class="row">
       <div class="col-sm">
-        <textarea oninput="updateHtml(event)" style="width: 100%; height: 350px;"></textarea>
+        <div class="form-group">
+          <textarea class="form-control" oninput="updateHtml(event)" style="width: 100%; height: 350px;"></textarea>
+        </div>
       </div>
       <div class="col-sm">
-        <iframe id="iframe" style="width: 100%; height: 350px;"></iframe>
+        <iframe id="iframe" style="width: 100%; height: 350px;" class="border"></iframe>
       </div>
     </div>
   </div>

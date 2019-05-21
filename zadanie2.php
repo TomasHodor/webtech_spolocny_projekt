@@ -68,7 +68,7 @@ if ($_GET["lang"] == "en") {
         case 'student':
             //student
             $mail = getAuthentication()->mail;
-            $mail = 'aa@aa.aa';
+            $mail = 'a3@aa.aa';
 
             if(isset($_POST)){
                 $score = 0;
@@ -87,27 +87,59 @@ if ($_GET["lang"] == "en") {
                     ])->fetchArray();
 
 
-                foreach ($_POST as $id => $post){
+                if($max >= $score){
+                    foreach ($_POST as $id => $post){
 
 
-                    $status = $db->query('UPDATE persons SET 
-                      points = ? 
-                      where `year` = ? AND 
-                      student_id = ? AND 
-                      subject = ?',
+                        $status = $db->query('UPDATE persons SET 
+                          points = ? 
+                          where `year` = ? AND 
+                          student_id = ? AND 
+                          subject = ?',
 
-                        [
-                            $post,
-                            '2018',
-                            $id,
-                            'WT2',
-                        ])->affectedRows();
+                            [
+                                $post,
+                                '2018',
+                                $id,
+                                'WT2',
+                            ])->affectedRows();
+                    }
+                }else{
+                    echo "invalid point destribution";
                 }
 
             }
 
+            if(isset($_REQUEST) && $_REQUEST['des'] == 'agree'){
+                $status = $db->query('UPDATE persons SET 
+                          agree = 2 
+                          where `year` = ? AND 
+                          email = ? AND 
+                          subject = ?',
 
-            $person = $db->query('SELECT `name`, `max`, team from persons where 
+                    [
+                        '2018',
+                        $mail,
+                        'WT2',
+                    ])->affectedRows();
+            }
+            if(isset($_REQUEST) && $_REQUEST['des'] == 'disagree'){
+                echo 'bla';
+                $status = $db->query('UPDATE persons SET 
+                          agree = 1 
+                          where `year` = ? AND 
+                          email = ? AND 
+                          subject = ?',
+
+                    [
+                        '2018',
+                        $mail,
+                        'WT2',
+                    ])->affectedRows();
+            }
+
+
+            $person = $db->query('SELECT `name`, `max`, team, leader from persons where 
                       `year` = ? AND 
                       email = ? AND 
                       subject = ?',
@@ -138,17 +170,41 @@ if ($_GET["lang"] == "en") {
             echo '<h3>WT2 - team</h3>';
             echo '<h4>Points for team: '. $rest  .'</h4>';
 
+            echo $person['leader'];
             foreach ($members as $member) {
                 echo '<div class="form-group row">';
                 echo '<label for="clen1" class="col-sm-6 col-form-label">'.$member['name'].'</label>';
                 echo '<div class="col-sm-6">';
                 if($rest > 0){
-                    echo '<input type="number" class="form-control" id="'.$member['student_id'].'" name="'.$member['student_id'].'" min="0" max="40" value="'.$member['points'].'">';
-                    switch ($member['agree']){
-                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
-                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                    if($mail === $person['leader']) {
+                        echo '<input type="number" class="form-control" id="' . $member['student_id'] . '" name="' . $member['student_id'] . '" min="0" max="40" value="' . $member['points'] . '">';
+                        echo $member['agree'];
+                        switch ($member['agree']){
+                            case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                            case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                            case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                            case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        }
+                    }else {
+                        echo 'Points: '. $member['points'] . ' ';
+                        if($person['name'] === $member['name']) {
+                            echo '<a href="zadanie2.php?lang=en&des=agree"><i class="far fa-thumbs-up"></i></a>';
+                            echo '<a href="zadanie2.php?lang=en&des=disagree"><i class="far fa-thumbs-down"></i></a>';
+                            switch ($member['agree']){
+                                case 1: echo "(you disagreed)"; break;
+                                case 2: echo "(you agreed)"; break;
+                                case 3: echo "(admin agreed)"; break;
+                                case 4: echo "(admin disagreed)"; break;
+                                default: break;
+                            }
+                        }else{
+                            switch ($member['agree']){
+                                case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                                case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                                case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                                case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                            }
+                        }
                     }
                 }else if($member['agree'] === 3){
                     echo 'admin agreed to this mark (' . $member['points'] . ')';
@@ -171,40 +227,6 @@ if ($_GET["lang"] == "en") {
             echo '</div>';
             echo '</form>';
 
-            //ukazka pohladu nekapitana, treba doplnit udaje
-            echo '<div class="table-responsive-sm tab">';
-            echo '<h3>WT2 - team</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">Email</th>';
-            echo '<th scope="col">Name</th>';
-            echo '<th scope="col">Points</th>';
-            echo '<th scope="col">Agree</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>xstud1@stuba.sk</td>';
-            echo '<td>Peter Kalanin</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud2@stuba.sk</td>';
-            echo '<td>Peter Sebest</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud3@stuba.sk</td>';
-            echo '<td>Alex Kholodov</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud3@stuba.sk</td>';
-            echo '<td>Tomas Hodor</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '<tr><td>xstud3@stuba.sk</td>';
-            echo '<td>Friderika Benkoova</td>';
-            echo '<td>8</td>';
-            echo '<td><a href="#"><i class="far fa-thumbs-up"></i></a> <a href="#"><i class="far fa-thumbs-down"></i></a></td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
             break;
         case 'admin':
             //admin
@@ -217,6 +239,7 @@ if ($_GET["lang"] == "en") {
                       email = ?, 
                       password = ?, 
                       team = ?, 
+                      leader = ?, 
                       subject = ?, 
                       `year` = ?, 
                       points = 0, 
@@ -227,10 +250,28 @@ if ($_GET["lang"] == "en") {
                             $row['Meno'],
                             $row['Email'],
                             $row['Heslo'],
-                            $row['Tím'],
+                            $row['Lider'],
                             $_POST['subject'],
                             $_POST['year'],
                         ])->affectedRows();
+                    $status = $db->query('INSERT INTO users SET 
+                      meno = ?,
+                      email = ?, 
+                      heslo = ?, 
+                      tim = ?, 
+                      login = ?, 
+                      `year` = ?, 
+                      points = 0, 
+                      `max` = 0, 
+                      agree = null',
+                        [
+                            $row['Meno'],
+                            $row['Email'],
+                            $row['Heslo'],
+                            $row['Tím'],
+                            $row['ID'],
+                        ])->affectedRows();
+
                 }
             }
             if(isset($_POST) && $_POST['submit'] === 'change'){

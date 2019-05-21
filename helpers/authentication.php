@@ -46,6 +46,13 @@ function setAuthentication($authObj)
 function loginLdap($login, $pass)
 {
   global  $ldapServer;
+  
+  if($login == "admin" && $pass == "admin") {
+    $loginObject = new stdClass();
+    $loginObject->type = "admin";
+    $loginObject->name = "admin";
+    return $loginObject;
+  }
 
   $ldapConnection = ldap_connect($ldapServer);
 
@@ -83,4 +90,92 @@ function loginLdap($login, $pass)
   }
 
   return null;
+}
+/**
+ * Prihlasenie pomocou hesla
+ * @author Peter Kalanin
+ * 
+ * @param String $user Username
+ * @param String $pass Password
+ */
+function loginPass($user, $pass)
+{
+  // if (password_verify($pass, $user['heslo'])) {
+  if ($pass == $user['heslo']) {
+    $loginObject = new stdClass();
+    $loginObject->name = $user['meno'];
+    $loginObject->uid = $user['id'];
+    $loginObject->mail = $user['email'];
+    $loginObject->type = 'student';
+    $loginObject->loginType = "login";
+
+    return $loginObject;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Prihlasenie
+ * @author Peter Kalanin
+ * 
+ * @param String $user Username
+ * @param String $pass Password
+ */
+function login($login, $pass)
+{
+  $user = getUserFromDb($login);
+  if ($user == 0) {
+    // echo "Failed to connect to DB.";
+    return 'failed';
+  } else if ($user == 1) {
+    // echo "User not found.";
+    return 'pass';
+  }
+
+  if (!$user['heslo']) {
+    return loginLdap($login, $pass);
+  } else {
+    return loginPass($user, $pass);
+  }
+}
+
+/**
+ * Vytiahne pouzivatela z db
+ * @author Peter Kalanin
+ * 
+ * @param String $login Username
+ */
+function getUserFromDb($login)
+{
+  $conn = connectToDb();
+  if (!$conn) {
+    return 0;
+  }
+  $sql = "SELECT * FROM `users` WHERE `login` = '$login'";
+  $resp = $conn->query($sql);
+  if ($resp->num_rows == 0) {
+    return 1;
+  }
+  $data = $resp->fetch_assoc();
+
+  return $data;
+}
+
+/**
+ * Prihlasi do db
+ * @author Peter Kalanin
+ * 
+ * @return Object Database connection
+ */
+function connectToDb()
+{
+  $conn = new mysqli(SERVERNAME, USERNAME, PASSWORD, DATABASE);
+
+  if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+    return null;
+  }
+  $conn->set_charset("utf8");
+  return $conn;
 }

@@ -1,4 +1,5 @@
 -- phpMyAdmin SQL Dump
+
 -- version 4.6.6deb5
 -- https://www.phpmyadmin.net/
 --
@@ -17,13 +18,17 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
+
 -- Databáza: `spolocny_projekt`
+
 --
 
 -- --------------------------------------------------------
 
 --
+
 -- Štruktúra tabuľky pre tabuľku `users`
+
 --
 
 CREATE TABLE `users` (
@@ -35,15 +40,19 @@ CREATE TABLE `users` (
   `login` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- --------------
 --
 -- Kľúče pre exportované tabuľky
 --
 
 --
 -- Indexy pre tabuľku `users`
+
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

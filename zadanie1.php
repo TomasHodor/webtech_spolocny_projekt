@@ -1,8 +1,60 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 require_once("helpers/csv.php");
-require_once("lib/mdnf/src/mpdf/Mpdf.php");
+
+$conn = new mysqli(servername,username, password, database );
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (isset($_POST["pdf"])){
+    //GET ALL DATA FROM DB
+    $DB_predmety = "select * from `zoznam_predmetov` ";
+    $DB_result = $conn->query($DB_predmety);
+    $predmety = [];
+    while ($row = $DB_result->fetch_assoc()) {
+        $predmety[$row['id_predmet']] =  $row['nazov'];
+    }
+
+
+    $data = [];
+
+    //get data for esch line
+    foreach ($predmety as $key => $value){
+        $DB_predmety = "SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = ".intval($key);
+        $DB_result = $conn->query($DB_predmety);
+        //data[pred1 = users[user1=>[znamky1],...usern=>[znamky2]]
+        $data[$value] = array();
+
+        while ($row = $DB_result->fetch_assoc()) {
+            $identity = array( 'id_user' => $row['id_user'], 'meno' => $row['meno']);
+            //decode object change to array and merge with identity
+            $obj = json_decode($row['json_object']);
+            $znamky = [];
+
+            foreach ($obj as $key2 => $value2){
+                $znamky[$key2] = $value2;
+            }
+            $data[$value][$identity['id_user']]=  array_merge(array('meno' => $identity['meno']) , $znamky);
+        }
+
+    }
+
+    $_COOKIE['pdf_data'] = $data;
+    require_once("helpers/pdf.php");
+    //todo generate pdf
+
+}
+
+
+//echo "save file \n";
+
 
 
 
@@ -15,13 +67,6 @@ require_once("lib/mdnf/src/mpdf/Mpdf.php");
     <title>Document</title>
 </head>
 
-
-<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-//echo "save file \n";
-?>
 
 <?php
 
@@ -467,11 +512,7 @@ else {
 ///
 //echo " <h1> my code /// 😂😂😂😂😂😂😂😂😂😂😂😂😂///// </h1>";
 
-$conn = new mysqli(servername,username, password, database );
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+
 
 echo '    <form  method="post" enctype="multipart/form-data">';
 //        <!--        todo create select menu for last xy years-->
@@ -552,44 +593,7 @@ else {
         $stmt->close();
 
     }
-    elseif (isset($_POST["pdf"])){
-        //GET ALL DATA FROM DB
-        $DB_predmety = "select * from `zoznam_predmetov` ";
-        $DB_result = $conn->query($DB_predmety);
-        $predmety = [];
-        while ($row = $DB_result->fetch_assoc()) {
-            $predmety[$row['id_predmet']] =  $row['nazov'];
-        }
-        var_dump($predmety) ;
 
-        $data = [];
-
-        //get data for esch line
-        foreach ($predmety as $key => $value){
-            $DB_predmety = "SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = ".intval($key);
-            $DB_result = $conn->query($DB_predmety);
-            //data[pred1 = users[user1=>[znamky1],...usern=>[znamky2]]
-            $data[$value] = array();
-
-            while ($row = $DB_result->fetch_assoc()) {
-
-                //todo generate pdf
-                $identity = array( 'id_user' => $row['id_user'], 'meno' => $row['meno']);
-                //decode object change to array and merge with identity
-                $obj = json_decode($row['json_object']);
-                $znamky = [];
-
-                foreach ($obj as $key2 => $value2){
-                    $znamky[$key2] = $value2;
-                }
-                $data[$value][$identity['id_user']]=  array_merge(array($identity['meno']) , $znamky);
-            }
-
-        }
-        var_dump($data);
-        //todo generate pdf
-        $mpdf=new mPDF();
-    }
     elseif (isset($_POST["delete"])){
         $nazov = $_POST["nazov_predmetu"];
         $DB_id = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";

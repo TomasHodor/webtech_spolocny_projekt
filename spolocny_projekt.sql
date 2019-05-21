@@ -61,6 +61,20 @@ CREATE TABLE `zoznam_predmetov` (
   `nazov` varchar(20) COLLATE utf8_slovak_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_slovak_ci;
 
+CREATE TABLE `persons` (
+  `id` int(11) NOT NULL,
+  `student_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `team` int(11) NOT NULL,
+  `points` int(11) NOT NULL,
+  `agree` int(11) DEFAULT NULL,
+  `max` int(11) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `year` varchar(255) NOT NULL,
+  `leader` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 --
 -- Indexes for dumped tables
 --
@@ -83,6 +97,9 @@ ALTER TABLE `zoznam_predmetov`
 -- AUTO_INCREMENT for dumped tables
 --
 
+ALTER TABLE `persons`
+  ADD PRIMARY KEY (`id`);
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 --
 -- AUTO_INCREMENT for table `zoznam_predmetov`
 --

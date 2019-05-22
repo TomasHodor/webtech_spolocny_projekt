@@ -35,6 +35,7 @@ class PDF extends FPDF
     function table($data){
         foreach ($data as $name => $users){
 //            nazov predmetu
+
             $this->SetTextColor(196,128,255);
             $this->SetFont('Arial','',12);
             $this->Cell(80,7,$name,1);
@@ -78,6 +79,7 @@ $pdf->setTitle("webTech 2 - Predmety");
 $pdf->AddPage();
 
 $data = $_COOKIE['admin_data'];
+
 $pdf->table($data);
 $pdf->Output();
 ?>

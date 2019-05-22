@@ -3,13 +3,16 @@ require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 
 if (isset($_POST) && $_POST['login'] && $_POST['pass']) {
-  $log = login($_POST['login'], $_POST['pass']);
-  setAuthentication($log);
-  header('Location: index.php');
+    $log = login($_POST['login'], $_POST['pass']);
+    if ($log != 'failed' && $log != 'pass') {
+        setAuthentication($log);
+        var_dump($log);
+        header('Location: index.php');
+    }
 }
 
 echo '<!DOCTYPE html>';
-if($_GET["lang"] == "en") {
+if ($_GET["lang"] == "en") {
     echo '<html lang="en">';
     echo '<head>';
     echo '<title>Final project</title>';
@@ -47,8 +50,7 @@ if($_GET["lang"] == "en") {
     echo '</div>';
     echo '</div>';
     echo '</form>';
-}
-else {
+} else {
     echo '<html lang="sk">';
     echo '<head>';
     echo '<title>Záverečný projekt</title>';
@@ -89,4 +91,3 @@ else {
 }
 echo '</body>';
 echo '</html>';
-?>

@@ -81,11 +81,9 @@ if($_GET["lang"] == "en") {
             //student
 
             //ukazka tabulky, treba doplnit udaje
-//            var_dump();
             $id_student = $_SESSION['auth']->uid;
             $name_student = $_SESSION['auth']->name;
 
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
 
             echo "<h4>$name_student, $id_student</h4>";
             studentTable("en", $conn,$id_student);
@@ -140,6 +138,7 @@ if($_GET["lang"] == "en") {
             echo '</div>';
             echo '</div>';
             echo '</form>';
+//            data_Cookie($conn);
             tableAdmin("en", $conn);
             break;
         default:
@@ -210,7 +209,6 @@ else {
             $id_student = $_SESSION['auth']->uid;
             $name_student = $_SESSION['auth']->name;
 
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
             echo "<h4>$name_student, $id_student</h4>";
 
             studentTable("en", $conn,$id_student);
@@ -220,7 +218,7 @@ else {
             //admin
 
             //ukazka pohladu adminu, treba doplnit udaje
-            echo '<form action="#" method="POST">';
+            echo '<form  method="post" enctype="multipart/form-data">';
             echo '<h3>Zadávanie výsledkov</h3>';
             echo '<div class="form-group row">';
             echo '<label for="rok" class="col-sm-4 col-form-label">Školský rok</label>';
@@ -265,7 +263,7 @@ else {
             echo '</div>';
             echo '</div>';
             echo '</form>';
-
+//            data_Cookie($conn);
             tableAdmin("en", $conn);
             break;
         default:
@@ -319,6 +317,7 @@ else {
         foreach ($csv_table_array as $lineKey => $values) {
             $stmt->bind_param("iiss", $id_user, $id_predmet, $meno, $JSONobj);
             //todo if user exist (cannot insert) update
+
             $id_user = $values['ID'];
             $meno = $values['meno'];
             $obj = new stdClass();

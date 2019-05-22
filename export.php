@@ -1,5 +1,5 @@
 <?php
-require_once("lib/config.php");
+require_once("config.php");
     $people = $db->query('SELECT student_id, `name`, points FROM persons  where 
                       `year` = ? AND 
                       subject = ?',

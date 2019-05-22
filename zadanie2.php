@@ -3,7 +3,7 @@ require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 include 'helpers/csv.php';
 
-require_once("lib/config.php");
+require_once("config.php");
 
 echo '<!DOCTYPE html>';
 if ($_GET["lang"] == "en") {
@@ -75,7 +75,7 @@ if ($_GET["lang"] == "en") {
                     $score += $post;
                 }
 
-                $max = $db->query('SELECT `max` from persons where 
+                $max = $db->query('SELECT `max`, agree from persons where 
                       `year` = ? AND 
                       email = ? AND 
                       subject = ?',
@@ -86,7 +86,8 @@ if ($_GET["lang"] == "en") {
                     ])->fetchArray();
 
 
-                if($max >= $score){
+
+                if($max['max'] >= $score){
                     foreach ($_POST as $id => $post){
 
 
@@ -103,6 +104,22 @@ if ($_GET["lang"] == "en") {
                                 'WT2',
                             ])->affectedRows();
                     }
+
+//                    team leader agrees
+                    if($max['agree'] !== 3) {
+                        $status = $db->query('UPDATE persons SET 
+                          agree = 2 
+                          where `year` = ? AND 
+                          email = ? AND 
+                          subject = ?',
+
+                            [
+                                '2018',
+                                $mail,
+                                'WT2',
+                            ])->affectedRows();
+                    }
+
                 }else{
                     echo "invalid point destribution";
                 }
@@ -123,7 +140,6 @@ if ($_GET["lang"] == "en") {
                     ])->affectedRows();
             }
             if(isset($_REQUEST) && $_REQUEST['des'] == 'disagree'){
-                echo 'bla';
                 $status = $db->query('UPDATE persons SET 
                           agree = 1 
                           where `year` = ? AND 
@@ -169,13 +185,28 @@ if ($_GET["lang"] == "en") {
             echo '<h3>WT2 - team</h3>';
             echo '<h4>Points for team: '. $rest  .'</h4>';
 
-            echo $person['leader'];
             foreach ($members as $member) {
                 echo '<div class="form-group row">';
                 echo '<label for="clen1" class="col-sm-6 col-form-label">'.$member['name'].'</label>';
                 echo '<div class="col-sm-6">';
-                if($rest > 0){
-                    if($mail === $person['leader']) {
+                if($person['max'] > 0){
+                    if($member['agree'] === 3) {
+                        echo 'admin agreed to this mark (' . $member['points'] . ')';
+                        switch ($member['agree']) {
+                            case 1:
+                                echo '<a href="#"><i class="far fa-thumbs-down"></i></a>';
+                                break;
+                            case 2:
+                                echo '<a href="#"><i class="far fa-thumbs-up"></i></a>';
+                                break;
+                            case 3:
+                                echo '<a href="#"><i class="far fa-thumbs-up"></i></a>';
+                                break;
+                            case 4:
+                                echo '<a href="#"><i class="far fa-thumbs-down"></i></a>';
+                                break;
+                        }
+                    }else if($mail === $person['leader']) {
                         echo '<input type="number" class="form-control" id="' . $member['student_id'] . '" name="' . $member['student_id'] . '" min="0" max="40" value="' . $member['points'] . '">';
                         echo $member['agree'];
                         switch ($member['agree']){
@@ -205,15 +236,8 @@ if ($_GET["lang"] == "en") {
                             }
                         }
                     }
-                }else if($member['agree'] === 3){
-                    echo 'admin agreed to this mark (' . $member['points'] . ')';
-                    switch ($member['agree']){
-                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
-                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
-                    }
-
+                }else {
+                    echo 'Points: '. $member['points'] . ' ';
                 }
                 echo '</div>';
                 echo '</div>';
@@ -228,6 +252,7 @@ if ($_GET["lang"] == "en") {
 
             break;
         case 'admin':
+
             //admin
             if (isset($_POST) && $_POST['submit'] === 'add') {
                 $table = csvToTable(file_get_contents($_FILES['csv']['tmp_name']), $_POST['delim']);
@@ -249,25 +274,24 @@ if ($_GET["lang"] == "en") {
                             $row['Meno'],
                             $row['Email'],
                             $row['Heslo'],
+                            $row['Team'],
                             $row['Lider'],
                             $_POST['subject'],
                             $_POST['year'],
                         ])->affectedRows();
                     $status = $db->query('INSERT INTO users SET 
+                      id = ?,
                       meno = ?,
                       email = ?, 
                       heslo = ?, 
                       tim = ?, 
-                      login = ?, 
-                      `year` = ?, 
-                      points = 0, 
-                      `max` = 0, 
-                      agree = null',
+                      login = ?',
                         [
+                            $row['ID'],
                             $row['Meno'],
                             $row['Email'],
                             $row['Heslo'],
-                            $row['Tím'],
+                            $row['Team'],
                             $row['ID'],
                         ])->affectedRows();
 
@@ -469,7 +493,7 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_agree = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
@@ -478,7 +502,7 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_disagree = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
@@ -487,16 +511,16 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_indifferent = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
-                      (agree = null) AND 
+                      (agree IS null) AND 
                       subject = ?',
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
 
             echo '<div style="margin: 0 auto;margin-top:30px;margin-bottom:30px;width: 10%;">';
@@ -538,7 +562,7 @@ if ($_GET["lang"] == "en") {
                     $subject,
                 ])->fetchAll();
 
-            $teams_clear = sizeof($teams);
+            $teams_clear = sizeof($teams_clear);
 
             $teams_comment = $db->query('SELECT distinct team  from persons where 
                       `year` = ? AND 
@@ -549,18 +573,18 @@ if ($_GET["lang"] == "en") {
                     $subject,
                 ])->fetchAll();
 
-            $teams_comment = sizeof($teams);
+            $teams_comment = sizeof($teams_comment);
 
             $teams_unknown = $db->query('SELECT distinct team  from persons where 
                       `year` = ? AND 
-                      (agree = null) AND 
+                      (agree IS NULL) AND 
                       subject = ?',
                 [
                     $year,
                     $subject,
                 ])->fetchAll();
 
-            $teams_unknown = sizeof($teams);
+            $teams_unknown = sizeof($teams_unknown);
 
             echo '<div class="table-responsive-sm tab">';
             echo '<h3>WT2 (2018/2019) - RT</h3>';
@@ -638,7 +662,6 @@ if ($_GET["lang"] == "en") {
     echo '</nav>';
     echo '<h2>Tímy</h2>';
 
-    echo getAuthentication()->type;
     switch (getAuthentication()->type) {
         case 'student':
             //student
@@ -651,7 +674,7 @@ if ($_GET["lang"] == "en") {
                     $score += $post;
                 }
 
-                $max = $db->query('SELECT `max` from persons where 
+                $max = $db->query('SELECT `max`, agree from persons where 
                       `year` = ? AND 
                       email = ? AND 
                       subject = ?',
@@ -662,7 +685,8 @@ if ($_GET["lang"] == "en") {
                     ])->fetchArray();
 
 
-                if($max >= $score){
+
+                if($max['max'] >= $score){
                     foreach ($_POST as $id => $post){
 
 
@@ -679,6 +703,22 @@ if ($_GET["lang"] == "en") {
                                 'WT2',
                             ])->affectedRows();
                     }
+
+//                    team leader agrees
+                    if($max['agree'] !== 3) {
+                        $status = $db->query('UPDATE persons SET 
+                          agree = 2 
+                          where `year` = ? AND 
+                          email = ? AND 
+                          subject = ?',
+
+                            [
+                                '2018',
+                                $mail,
+                                'WT2',
+                            ])->affectedRows();
+                    }
+
                 }else{
                     echo "Nepovolene rozdelenie bodov";
                 }
@@ -699,7 +739,6 @@ if ($_GET["lang"] == "en") {
                     ])->affectedRows();
             }
             if(isset($_REQUEST) && $_REQUEST['des'] == 'disagree'){
-                echo 'bla';
                 $status = $db->query('UPDATE persons SET 
                           agree = 1 
                           where `year` = ? AND 
@@ -745,13 +784,21 @@ if ($_GET["lang"] == "en") {
             echo '<h3>WT2 - tím na vypracovanie záverečného projektu</h3>';
             echo '<h4>Body pridené tímu: '. $rest  .'</h4>';
 
-            echo $person['leader'];
             foreach ($members as $member) {
                 echo '<div class="form-group row">';
                 echo '<label for="clen1" class="col-sm-6 col-form-label">'.$member['name'].'</label>';
                 echo '<div class="col-sm-6">';
-                if($rest > 0){
-                    if($mail === $person['leader']) {
+                if($person['max'] > 0){
+                    if($member['agree'] === 3){
+                        echo 'Admin Suhlasi s touto znackou (' . $member['points'] . ')';
+                        switch ($member['agree']){
+                            case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                            case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                            case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
+                            case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
+                        }
+
+                    }else if($mail === $person['leader']) {
                         echo '<input type="number" class="form-control" id="' . $member['student_id'] . '" name="' . $member['student_id'] . '" min="0" max="40" value="' . $member['points'] . '">';
                         echo $member['agree'];
                         switch ($member['agree']){
@@ -781,15 +828,8 @@ if ($_GET["lang"] == "en") {
                             }
                         }
                     }
-                }else if($member['agree'] === 3){
-                    echo 'Admin Suhlasi s touto znackou (' . $member['points'] . ')';
-                    switch ($member['agree']){
-                        case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
-                        case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 3: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
-                        case 4: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
-                    }
-
+                }else {
+                    echo 'Points: '. $member['points'] . ' ';
                 }
                 echo '</div>';
                 echo '</div>';
@@ -825,25 +865,24 @@ if ($_GET["lang"] == "en") {
                             $row['Meno'],
                             $row['Email'],
                             $row['Heslo'],
+                            $row['Team'],
                             $row['Lider'],
                             $_POST['subject'],
                             $_POST['year'],
                         ])->affectedRows();
                     $status = $db->query('INSERT INTO users SET 
+                      id = ?,
                       meno = ?,
                       email = ?, 
                       heslo = ?, 
                       tim = ?, 
-                      login = ?, 
-                      `year` = ?, 
-                      points = 0, 
-                      `max` = 0, 
-                      agree = null',
+                      login = ?',
                         [
+                            $row['ID'],
                             $row['Meno'],
                             $row['Email'],
                             $row['Heslo'],
-                            $row['Tím'],
+                            $row['Team'],
                             $row['ID'],
                         ])->affectedRows();
 
@@ -1046,7 +1085,7 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_agree = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
@@ -1055,7 +1094,7 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_disagree = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
@@ -1064,16 +1103,16 @@ if ($_GET["lang"] == "en") {
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
             $students_indifferent = $db->query('SELECT count(*) as c from persons where 
                       `year` = ? AND 
-                      (agree = null) AND 
+                      (agree IS null) AND 
                       subject = ?',
                 [
                     $year,
                     $subject,
-                ])->fetchAll();
+                ])->fetchArray();
 
 
             echo '<div style="margin: 0 auto;margin-top:30px;margin-bottom:30px;width: 10%;">';
@@ -1132,7 +1171,7 @@ if ($_GET["lang"] == "en") {
 
             $teams_unknown = $db->query('SELECT distinct team  from persons where 
                       `year` = ? AND 
-                      (agree = null) AND 
+                      (agree IS null) AND 
                       subject = ?',
                 [
                     $year,

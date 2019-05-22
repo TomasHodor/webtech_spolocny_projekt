@@ -1,5 +1,10 @@
 <?php
-require(__DIR__ . '/../lib/Mpdf/fpdf.php');
+if($_SERVER['HTTP_HOST'] != 'localhost'){
+    require(__DIR__ . '/../lib/Mpdf/fpdf.php');
+}
+else {
+    require('./../lib/Mpdf/fpdf.php');
+}
 //todo osetrenie rozlozenia, page breaks, new pages...
 class PDF extends FPDF
 {
@@ -72,7 +77,7 @@ $pdf = new PDF();
 $pdf->setTitle("webTech 2 - Predmety");
 $pdf->AddPage();
 
-$data = $_COOKIE['pdf_data'];
+$data = $_COOKIE['admin_data'];
 $pdf->table($data);
 $pdf->Output();
 ?>

@@ -1,7 +1,7 @@
 <?php
 require_once("config.php");
 
-/**
+/**a
  * Funkcia vracajuca autorizacny session token
  * @author Peter Kalanin
  * 

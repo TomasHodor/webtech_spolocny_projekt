@@ -131,7 +131,7 @@ ALTER TABLE `zoznam_predmetov`
 
 ALTER TABLE `persons`
   ADD PRIMARY KEY (`id`);
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `zoznam_predmetov`
 --

@@ -14,9 +14,8 @@ function csvToTable($csvText, $delim = ";")
   $csvLines = explode("\n", $csvText);
   $headers = explode($delim, $csvLines[0]);
 
-
   foreach ($csvLines as $lineKey => $line) {
-    if ($lineKey == 0 || $line == '') {
+    if ($lineKey == 0) {
       $headers = explode($delim, $line);
       $headers_clear = [];
       $index = 0;

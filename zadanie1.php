@@ -1,28 +1,47 @@
 <?php
-require_once("helpers/authentication.php");
-require_once("helpers/authorization.php");
-require_once("helpers/csv.php");
-
-
-?>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-
-
-<?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-//echo "save file \n";
-?>
 
-<?php
-ECHO " SAVE FILE !!!!!!!!!!!!!!!!!!!!!!!1 \n";
+require_once("helpers/authentication.php");
+require_once("helpers/authorization.php");
+require_once("helpers/csv.php");
+require_once("helpers/func_zad1.php");
+
+$output_status;
+$conn = new mysqli(servername,username, password, database );
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (isset($_POST["pdf"])){
+    data_Cookie($conn);
+    require_once("helpers/pdf.php");
+}
+elseif (isset($_POST["delete"])) {
+    $nazov = $_POST["nazov"];
+    $DB_id = "SELECT `id_predmet`, `nazov` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";
+    $DB = $conn->query($DB_id);
+    $predmet_row = $DB->fetch_assoc();
+    $id_predmet = intval($predmet_row['id_predmet']);
+    $output_status = $predmet_row['nazov'];
+    //todo delete data from cookie
+
+
+    if (!$id_predmet) {
+        echo "predmet nieje v DB \n";
+    } else {
+        //vymaz z DB predmety, a hodnotenia
+        $DB_xPredmet = "DELETE FROM `zoznam_predmetov` WHERE `id_predmet` = $id_predmet;";
+//            $DB_xHosnotenie = "DELETE FROM `hodnotenie_predmetu` WHERE `id_predmet` = $id_predmet;";
+        $conn->multi_query($DB_xPredmet );
+    }
+    //todo delete data from cookie
+
+}
+
+
 echo '<!DOCTYPE html>';
 if($_GET["lang"] == "en") {
     echo '<html lang="en">';
@@ -77,6 +96,7 @@ if($_GET["lang"] == "en") {
     echo '</ul>';
     echo '</div>';
     echo '</nav>';
+    echo "<h4> predmet: $output_status bol vymazany</h4>";
     echo '<h2>Results</h2>';
 
     switch(getAuthentication()->type) {
@@ -84,35 +104,19 @@ if($_GET["lang"] == "en") {
             //student
 
             //ukazka tabulky, treba doplnit udaje
-            echo '<div class="table-responsive-sm tab">';
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">Preliminary</th>';
-            echo '<th scope="col">Project</th>';
-            echo '<th scope="col">Test</th>';
-            echo '<th scope="col">Questionnaire</th>';
-            echo '<th scope="col">Bonus</th>';
-            echo '<th scope="col">Sum</th>';
-            echo '<th scope="col">Mark</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>46.75</td>';
-            echo '<td>18</td>';
-            echo '<td>10</td>';
-            echo '<td>1</td>';
-            echo '<td></td>';
-            echo '<td>75.75</td>';
-            echo '<td>C</td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
+            $id_student = $_SESSION['auth']->uid;
+            $name_student = $_SESSION['auth']->name;
+
+
+            echo "<h4>$name_student, $id_student</h4>";
+            studentTable("en", $conn,$id_student);
+
             break;
         case 'admin':
             //admin
 
             //ukazka pohladu adminu, treba doplnit udaje
-            echo '<form action="#" method="POST">';
+            echo '<form  method="post" enctype="multipart/form-data">';
             echo '<h3>Entering results</h3>';
             echo '<div class="form-group row">';
             echo '<label for="rok" class="col-sm-4 col-form-label">Academic year</label>';
@@ -141,99 +145,24 @@ if($_GET["lang"] == "en") {
             echo '<div class="form-group row">';
             echo '<label for="oddelovac" class="col-sm-4 col-form-label">Separator</label>';
             echo '<div class="col-sm-8">';
-            echo '<select class="form-control" id="oddelovac">';
-            echo '<option name="ciarka">,</option>';
-            echo '<option name="bodkociarka">;</option>';
-            echo '</select>';
+            echo '<input class="form-control" type="radio" name="oddelovac" value="," checked> ciarka [,]';
+            echo '<input class="form-control" type="radio" name="oddelovac" value=";"> bodkociarka [;]<br>';
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
             echo '<div class="col-sm-12">';
-            echo '<input type="submit" class="btn btn-primary" value="Save">';
+            echo '<input type="submit" class="btn btn-primary" value="Save" name="Save">';
+            echo '</div>';
+            echo '<div class="col-2">';
+            echo '<input type ="submit" class="btn btn-primary"  name="pdf" value="Courses.PDF">';
+            echo '</div>';
+            echo '<div class="col-2">';
+            echo '<input type ="submit" class="btn btn-primary"  name="delete" value="Delete course">';
             echo '</div>';
             echo '</div>';
             echo '</form>';
-
-            echo '<div class="table-responsive-sm tab2">';
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">ID</th>';
-            echo '<th scope="col">Name</th>';
-            echo '<th scope="col">CV1</th>';
-            echo '<th scope="col">CV2</th>';
-            echo '<th scope="col">CV3</th>';
-            echo '<th scope="col">CV4</th>';
-            echo '<th scope="col">CV5</th>';
-            echo '<th scope="col">CV6</th>';
-            echo '<th scope="col">CV7</th>';
-            echo '<th scope="col">CV8</th>';
-            echo '<th scope="col">CV9</th>';
-            echo '<th scope="col">CV10</th>';
-            echo '<th scope="col">CV11</th>';
-            echo '<th scope="col">Z1</th>';
-            echo '<th scope="col">Z2</th>';
-            echo '<th scope="col">VT</th>';
-            echo '<th scope="col">SK-T</th>';
-            echo '<th scope="col">SK-P</th>';
-            echo '<th scope="col">Sum</th>';
-            echo '<th scope="col">Mark</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>12345</td>';
-            echo '<td>Name1 Surname1</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>3</td>';
-            echo '<td>4</td>';
-            echo '<td>3</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td></td>';
-            echo '<td>2</td>';
-            echo '<td>1.25</td>';
-            echo '<td>6</td>';
-            echo '<td>6</td>';
-            echo '<td>8</td>';
-            echo '<td>14.9</td>';
-            echo '<td>16</td>';
-            echo '<td>73.77</td>';
-            echo '<td>D</td></tr>';
-            echo '<tr><td>24598</td>';
-            echo '<td>Name2 Surname2</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>4</td>';
-            echo '<td>3</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>10</td>';
-            echo '<td>7</td>';
-            echo '<td>8</td>';
-            echo '<td>20</td>';
-            echo '<td>14</td>';
-            echo '<td>85.05</td>';
-            echo '<td>B</td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
-
-            echo '<div class="container buttons">';
-            echo '<div class="row justify-content-around">';
-            echo '<div class="col-2">';
-            echo '<button type="button" class="btn btn-primary" onclick="">Print table</button>';
-            echo '</div>';
-            echo '<div class="col-2">';
-            echo '<button type="button" class="btn btn-primary" onclick="">Delete subject</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+//            data_Cookie($conn);
+            tableAdmin("en", $conn);
             break;
         default:
             header('Location: index.php?lang=en&notallowed');
@@ -295,40 +224,24 @@ else {
     echo '</nav>';
     echo '<h2>Výsledky</h2>';
 
-    switch(getAuthentication()->type) {
+    switch(isset(getAuthentication()->type) ? getAuthentication()->type : null) {
         case 'student':
             //student
 
             //ukazka tabulky, treba doplnit udaje
-            echo '<div class="table-responsive-sm tab">';
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">Zápočet</th>';
-            echo '<th scope="col">Projekt</th>';
-            echo '<th scope="col">Test</th>';
-            echo '<th scope="col">Dotazník</th>';
-            echo '<th scope="col">Bonus</th>';
-            echo '<th scope="col">Súčet</th>';
-            echo '<th scope="col">Známka</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>46.75</td>';
-            echo '<td>18</td>';
-            echo '<td>10</td>';
-            echo '<td>1</td>';
-            echo '<td></td>';
-            echo '<td>75.75</td>';
-            echo '<td>C</td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
+            $id_student = $_SESSION['auth']->uid;
+            $name_student = $_SESSION['auth']->name;
+
+            echo "<h4>$name_student, $id_student</h4>";
+
+            studentTable("en", $conn,$id_student);
+
             break;
         case 'admin':
             //admin
 
             //ukazka pohladu adminu, treba doplnit udaje
-            echo '<form action="#" method="POST">';
+            echo '<form  method="post" enctype="multipart/form-data">';
             echo '<h3>Zadávanie výsledkov</h3>';
             echo '<div class="form-group row">';
             echo '<label for="rok" class="col-sm-4 col-form-label">Školský rok</label>';
@@ -351,112 +264,37 @@ else {
             echo '<div class="form-group row">';
             echo '<label for="subor" class="col-sm-4 col-form-label">CSV súbor</label>';
             echo '<div class="col-sm-8">';
-            echo '<input type="file" class="form-control" id="subor" name="subor">';
+            echo '<input type="file" class="form-control" id="subor" name="subor" >';
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
-            echo '<label for="oddelovac" class="col-sm-4 col-form-label">Oddeľovač</label>';
+            echo '<label for="oddelovac" class="col-sm-4 col-form-label">Separator</label>';
             echo '<div class="col-sm-8">';
-            echo '<select class="form-control" id="oddelovac">';
-            echo '<option name="ciarka">,</option>';
-            echo '<option name="bodkociarka">;</option>';
-            echo '</select>';
+            echo '<input class="form-control" type="radio" name="oddelovac" value="," checked> ciarka [,]';
+            echo '<input class="form-control" type="radio" name="oddelovac" value=";"> bodkociarka [;]<br>';
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group row">';
             echo '<div class="col-sm-12">';
-            echo '<input type="submit" class="btn btn-primary" value="Uložiť">';
+            echo '<input type="submit" class="btn btn-primary" value="Uložiť" name="Save">';
+            echo '</div>';
+            echo '<div class="col-2">';
+            echo '<input type ="submit" class="btn btn-primary"  name="pdf" value="Predmety.PDF">';
+            echo '</div>';
+            echo '<div class="col-2">';
+            echo '<input type ="submit" class="btn btn-primary"  name="delete" value="Vymaz Predmet">';
             echo '</div>';
             echo '</div>';
             echo '</form>';
-
-            echo '<div class="table-responsive-sm tab2">';
-            echo '<h3>WT2 (2018/2019) - RT</h3>';
-            echo '<table class="table table-hover table-sm">';
-            echo '<thead style="background-color: rgb(90, 0, 0);color: white;">';
-            echo '<tr><th scope="col">ID</th>';
-            echo '<th scope="col">Meno</th>';
-            echo '<th scope="col">CV1</th>';
-            echo '<th scope="col">CV2</th>';
-            echo '<th scope="col">CV3</th>';
-            echo '<th scope="col">CV4</th>';
-            echo '<th scope="col">CV5</th>';
-            echo '<th scope="col">CV6</th>';
-            echo '<th scope="col">CV7</th>';
-            echo '<th scope="col">CV8</th>';
-            echo '<th scope="col">CV9</th>';
-            echo '<th scope="col">CV10</th>';
-            echo '<th scope="col">CV11</th>';
-            echo '<th scope="col">Z1</th>';
-            echo '<th scope="col">Z2</th>';
-            echo '<th scope="col">VT</th>';
-            echo '<th scope="col">SK-T</th>';
-            echo '<th scope="col">SK-P</th>';
-            echo '<th scope="col">Spolu</th>';
-            echo '<th scope="col">Známka</th></tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            echo '<tr><td>12345</td>';
-            echo '<td>Priezvisko1 Meno1</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>3</td>';
-            echo '<td>4</td>';
-            echo '<td>3</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td></td>';
-            echo '<td>2</td>';
-            echo '<td>1.25</td>';
-            echo '<td>6</td>';
-            echo '<td>6</td>';
-            echo '<td>8</td>';
-            echo '<td>14.9</td>';
-            echo '<td>16</td>';
-            echo '<td>73.77</td>';
-            echo '<td>D</td></tr>';
-            echo '<tr><td>24598</td>';
-            echo '<td>Priezvisko2 Meno2</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>4</td>';
-            echo '<td>3</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>3</td>';
-            echo '<td>2</td>';
-            echo '<td>2</td>';
-            echo '<td>10</td>';
-            echo '<td>7</td>';
-            echo '<td>8</td>';
-            echo '<td>20</td>';
-            echo '<td>14</td>';
-            echo '<td>85.05</td>';
-            echo '<td>B</td></tr>';
-            echo '</tbody>';
-            echo '</table>';
-            echo '</div>';
-
-            echo '<div class="container buttons">';
-            echo '<div class="row justify-content-around">';
-            echo '<div class="col-2">';
-            echo '<button type="button" class="btn btn-primary" onclick="">Vytlačiť tabuľku</button>';
-            echo '</div>';
-            echo '<div class="col-2">';
-            echo '<button type="button" class="btn btn-primary" onclick="">Vymazať predmet</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+//            data_Cookie($conn);
+            tableAdmin("en", $conn);
             break;
         default:
             header('Location: index.php?notallowed');
             break;
     }
-    echo '<body>';
-    echo '<div>';
+
+//    echo '<div>';
 
 }
 /////////m y    C O D E /////////
@@ -465,63 +303,34 @@ else {
 ///
 //echo " <h1> my code /// 😂😂😂😂😂😂😂😂😂😂😂😂😂///// </h1>";
 
-$conn = new mysqli(servername,username, password, database );
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-echo '    <form  method="post" enctype="multipart/form-data">';
-//        <!--        todo create select menu for last xy years-->
-echo '        <select>';
-echo '            <option value="2018/2019">2018/2019</option>';
-echo '        </select>';
-echo '        <label for="nazov_predmet">Nazov predmetu</label>';
-echo '        <input name="nazov_predmetu" value="algebra">';
-echo '        <label for="CSV_subor">subor.csv</label>';
-echo '        <input type="file" name="CSV_subor" id="fileToUpload"><br>';
-echo '        <label for="oddelovac">Oddelovac: </label>';
-echo '        <input type="radio" name="oddelovac" value="," checked> ciarka [,]';
-echo '        <input type="radio" name="oddelovac" value=";"> bodkociarka [;]<br>';
-echo '        <input type ="submit"  name="upload" value="upload CSV" ><br>';
-echo '        <input type ="submit"  name="pdf" value="predmety.PDF">';
-echo '        <input type ="submit"  name="delete" value="vymaz predmet">';
-echo '    </form>';
-echo '</div>';
-
-
 if(!($token=getAuthentication() ) && $_SERVER['HTTP_HOST'] != 'localhost'){
-    echo "osobe nebola authetifikovana <br>";
+
 }
 else {
-    echo "osobe JE authetifikovana <BR>";
     $auth_type = authorize();
-    echo $auth_type;//localhost for local debuging
-    if(isset($_POST["upload"])) {
-        echo "form is set \n";
-        $target_file =  basename($_FILES["CSV_subor"]["name"]);
-        $csv_file = file_get_contents($_FILES['CSV_subor']['tmp_name']);
+    if (isset($_POST["Save"])) {
+        $target_file = basename($_FILES["subor"]["name"]);
+        $csv_file = file_get_contents($_FILES['subor']['tmp_name']);
         //todo test loaded file and skontroluj skryte znaky
         $delimeter = $_POST['oddelovac'];
         $csv_table_array = csvToTable($csv_file, $delimeter);
-        //
+
         //insert data to db\
         $id_predmet;
-        $predmet = $_POST["nazov_predmetu"];
+        $predmet = (strlen($_POST["nazov"])) != 0 ? $_POST["nazov"] : "bez nazvu";
         $checkDB = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$predmet' ";
-        $data =  $conn->query($checkDB);
+        $data = $conn->query($checkDB);
         $res_num = $data->num_rows;
 
 //            pozri ci existuje zaznam
-        if($res_num == 0){
+        if ($res_num == 0) {
             $predmet_insert = "INSERT INTO `zoznam_predmetov` (`id_predmet`, `nazov`) VALUES (NULL, '$predmet');";
             $res = $conn->query($predmet_insert);
             //get last id
             $id_predmet = $conn->insert_id;
-        }
-        else {
+        } else {
             //predmet exists, get id
-            $row =  $data->fetch_assoc();
+            $row = $data->fetch_assoc();
             $id_predmet = $row['id_predmet'];
         }
 
@@ -529,7 +338,8 @@ else {
         $stmt = $conn->prepare("INSERT INTO `hodnotenie_predmetu` (`id_user`, `id_predmet`, `meno`, `json_object`) VALUES (?,?,?,?)");
 
         foreach ($csv_table_array as $lineKey => $values) {
-            $stmt->bind_param("iiss", $id_user,$id_predmet, $meno, $JSONobj);
+            $stmt->bind_param("iiss", $id_user, $id_predmet, $meno, $JSONobj);
+            //todo if user exist (cannot insert) update
 
             $id_user = $values['ID'];
             $meno = $values['meno'];
@@ -546,71 +356,21 @@ else {
             }
             $JSONobj = json_encode($obj);
             $stmt->execute();
-            $stmt->close();
         }
+        $stmt->close();
 
     }
-    elseif (isset($_POST["pdf"])){
-        //GET ALL DATA FROM DB
-        $DB_predmety = "select * from `zoznam_predmetov` ";
-        $DB_result = $conn->query($DB_predmety);
-        $predmety = [];
-        while ($row = $DB_result->fetch_assoc()) {
-            $predmety[$row['id_predmet']] =  $row['nazov'];
-        }
-        var_dump($predmety) ;
-
-        $data = [];
-
-        //get data for esch line
-        foreach ($predmety as $key => $value){
-            $DB_predmety = "select * from SELECT `id_user`,`meno`,`json_object` FROM `hodnotenie_predmetu` WHERE `id_predmet` = $key";
-            $DB_result = $conn->query($DB_predmety);
-            while ($row = $DB_result->fetch_assoc()) {
-
-                //todo generate pdf
-                $identity = array( 'id_user' => $row['id_user'], 'meno' => $row['meno']);
-                //decode object change to array and merge with identity
-                $obj = json_decode($row['json_object']);
-                $znamky = [];
-
-                foreach ($obj as $key => $value){
-                    $znamky[$key] = $value;
-                }
-                $data[$value] =  array_merge($identity, $znamky);
-            }
-            var_dump($data);
-        }
-    }
-    elseif (isset($_POST["delete"])){
-        $nazov = $_POST["nazov_predmetu"];
-        $DB_id = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";
-        $DB = $conn->query($DB_id);
-        $id_predmet = intval($DB->fetch_assoc()['id_predmet']);
-
-        if(!$id_predmet){
-            echo "predmet nieje v DB \n";
-        }else {
-            //vymaz z DB predmety, a hodnotenia
-            $DB_xPredmet = "DELETE FROM `zoznam_predmetov` WHERE `id_predmet` = $id_predmet;";
-            $DB_xHosnotenie = "DELETE FROM `hodnotenie_predmetu` WHERE `id_predmet` = $id_predmet;";
-            $tmp = $DB_xPredmet.$DB_xHosnotenie;
-            $conn->multi_query($DB_xPredmet.$DB_xHosnotenie);
-        }
 
 
-    }
-    else {
-        echo " upload form is not set \n";
-    }
-    // todo change to admin
-    if($auth_type == 'student' || $_SERVER['HTTP_HOST'] ='localhost' ){
 
-    }
+//    echo '</body>';
+
+
+
 }
 
 $conn->close();
 
 echo '</body>';
+
 echo '</html>';
-?>

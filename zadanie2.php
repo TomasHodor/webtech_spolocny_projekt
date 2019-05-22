@@ -1203,3 +1203,4 @@ if ($_GET["lang"] == "en") {
 echo '</body>';
 echo '</html>';
 ?>
+>>>>>>> .merge_file_a08968

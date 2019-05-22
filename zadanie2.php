@@ -291,7 +291,7 @@ if ($_GET["lang"] == "en") {
                             $row['Email'],
                             $row['Heslo'],
                             $row['Team'],
-                            $row['ID'],
+                            $row['Email'],
                         ])->affectedRows();
 
                 }
@@ -881,7 +881,7 @@ if ($_GET["lang"] == "en") {
                             $row['Email'],
                             $row['Heslo'],
                             $row['Team'],
-                            $row['ID'],
+                            $row['Email'],
                         ])->affectedRows();
 
                 }

@@ -1,6 +1,6 @@
 <?php
 
-class db
+class dbx
 {
 
     protected $connection;

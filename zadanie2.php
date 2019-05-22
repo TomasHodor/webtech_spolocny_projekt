@@ -3,7 +3,7 @@ require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 include 'helpers/csv.php';
 
-require_once("lib/config.php");
+require_once("config.php");
 
 echo '<!DOCTYPE html>';
 if ($_GET["lang"] == "en") {

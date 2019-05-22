@@ -3,7 +3,7 @@ require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
 include 'helpers/csv.php';
 
-require_once("config.php");
+require_once("lib/config.php");
 
 echo '<!DOCTYPE html>';
 if ($_GET["lang"] == "en") {
@@ -208,7 +208,6 @@ if ($_GET["lang"] == "en") {
                         }
                     }else if($mail === $person['leader']) {
                         echo '<input type="number" class="form-control" id="' . $member['student_id'] . '" name="' . $member['student_id'] . '" min="0" max="40" value="' . $member['points'] . '">';
-                        echo $member['agree'];
                         switch ($member['agree']){
                             case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
                             case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
@@ -800,7 +799,6 @@ if ($_GET["lang"] == "en") {
 
                     }else if($mail === $person['leader']) {
                         echo '<input type="number" class="form-control" id="' . $member['student_id'] . '" name="' . $member['student_id'] . '" min="0" max="40" value="' . $member['points'] . '">';
-                        echo $member['agree'];
                         switch ($member['agree']){
                             case 1: echo '<a href="#"><i class="far fa-thumbs-down"></i></a>'; break;
                             case 2: echo '<a href="#"><i class="far fa-thumbs-up"></i></a>'; break;
@@ -1156,7 +1154,7 @@ if ($_GET["lang"] == "en") {
                     $subject,
                 ])->fetchAll();
 
-            $teams_clear = sizeof($teams);
+            $teams_clear = sizeof($teams_clear);
 
             $teams_comment = $db->query('SELECT distinct team  from persons where 
                       `year` = ? AND 
@@ -1167,18 +1165,18 @@ if ($_GET["lang"] == "en") {
                     $subject,
                 ])->fetchAll();
 
-            $teams_comment = sizeof($teams);
+            $teams_comment = sizeof($teams_comment);
 
             $teams_unknown = $db->query('SELECT distinct team  from persons where 
                       `year` = ? AND 
-                      (agree IS null) AND 
+                      (agree IS NULL) AND 
                       subject = ?',
                 [
                     $year,
                     $subject,
                 ])->fetchAll();
 
-            $teams_unknown = sizeof($teams);
+            $teams_unknown = sizeof($teams_unknown);
 
             echo '<div class="table-responsive-sm tab">';
             echo '<h3>WT2 (2018/2019) - RT</h3>';

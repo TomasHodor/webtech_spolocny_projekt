@@ -79,7 +79,7 @@ if($_GET["lang"] == "en") {
     echo '<a class="nav-link" href="tasks.php?lang=en">Tasks</a>';
     echo '</li>';
     echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=en">Documentation</a>';
+    echo '<a class="nav-link" href="dokumentacia.docx">Documentation</a>';
     echo '</li>';
     echo '</ul>';
     echo '<ul class="nav navbar-nav navbar-right">';
@@ -254,7 +254,7 @@ else {
     echo '<a class="nav-link" href="tasks.php?lang=sk">Úlohy</a>';
     echo '</li>';
     echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=sk">Dokumentácia</a>';
+    echo '<a class="nav-link" href="dokumentacia.docx">Dokumentácia</a>';
     echo '</li>';
     echo '</ul>';
     echo '<ul class="nav navbar-nav navbar-right">';
@@ -496,7 +496,7 @@ if (isset($_POST["sendemail"])) {
 ?>
 <script>
     function updateHtml(text) {
-        var textarea = $("textarea")[0];
+        var textarea = document.getElementsByTagName("textarea")[0];
 
         var iframe = document.getElementById("iframe");
         var ifel = iframe.contentWindow.document.getElementsByTagName("html")[0];

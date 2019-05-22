@@ -44,7 +44,7 @@ if($_GET["lang"] == "en") {
     echo '<a class="nav-link" href="tasks.php?lang=en">Tasks</a>';
     echo '</li>';    
     echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=en">Documentation</a>';
+    echo '<a class="nav-link" href="dokumentacia.docx">Documentation</a>';
     echo '</li>'; 
     echo '</ul>';
     echo '<ul class="nav navbar-nav navbar-right">';
@@ -64,7 +64,7 @@ if($_GET["lang"] == "en") {
     echo '<tr><th scope="col">Task</th><th scope="col">Team member</th></tr>';
     echo '</thead>';
     echo '<tbody>';
-    echo '<tr><td>Authentication</td><td>Peter Kalanin</td></tr>';
+    echo '<tr><td>Authentication, authorization</td><td>Peter Kalanin</td></tr>';
     echo '<tr><td>Task 1 - results</td><td>Peter Sebest</td></tr>';
     echo '<tr><td>Task 2 - teams</td><td>Alex Kholodov</td></tr>';
     echo '<tr><td>Task 3 - passwords</td><td>Tomas Hodor</td></tr>';
@@ -113,7 +113,7 @@ else {
     echo '<a class="nav-link" href="tasks.php?lang=sk">Úlohy</a>';
     echo '</li>';    
     echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=sk">Dokumentácia</a>';
+    echo '<a class="nav-link" href="dokumentacia.docx">Dokumentácia</a>';
     echo '</li>'; 
     echo '</ul>';
     echo '<ul class="nav navbar-nav navbar-right">';
@@ -133,7 +133,7 @@ else {
     echo '<tr><th scope="col">Úloha</th><th scope="col">Člen tímu</th></tr>';
     echo '</thead>';
     echo '<tbody>';
-    echo '<tr><td>Autentifikácia</td><td>Peter Kalanin</td></tr>';
+    echo '<tr><td>Autentifikácia, autorizácia</td><td>Peter Kalanin</td></tr>';
     echo '<tr><td>Úloha 1 - výsledky</td><td>Peter Sebest</td></tr>';
     echo '<tr><td>Úloha 2 - tímy</td><td>Alex Kholodov</td></tr>';
     echo '<tr><td>Úloha 3 - heslá</td><td>Tomas Hodor</td></tr>';

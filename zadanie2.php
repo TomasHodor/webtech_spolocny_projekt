@@ -1,9 +1,9 @@
 <?php
 require_once("helpers/authentication.php");
 require_once("helpers/authorization.php");
-include 'helpers/csv.php';
+require_once('helpers/csv.php');
 
-require_once("lib/config.php");
+require_once("config.php");
 
 echo '<!DOCTYPE html>';
 if ($_GET["lang"] == "en") {
@@ -48,7 +48,7 @@ if ($_GET["lang"] == "en") {
     <a class="nav-link" href="tasks.php?lang=en">Tasks</a>
     </li>
     <li class="nav-item">
-    <a class="nav-link" href="documentation.php?lang=en">Documentation</a>
+    <a class="nav-link" href="dokumentacia.docx">Documentation</a>
     </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
@@ -646,7 +646,7 @@ if ($_GET["lang"] == "en") {
     echo '<a class="nav-link" href="tasks.php?lang=sk">Úlohy</a>';
     echo '</li>';
     echo '<li class="nav-item">';
-    echo '<a class="nav-link" href="documentation.php?lang=sk">Dokumentácia</a>';
+    echo '<a class="nav-link" href="dokumentacia.docx">Dokumentácia</a>';
     echo '</li>';
     echo '</ul>';
     echo '<ul class="nav navbar-nav navbar-right">';

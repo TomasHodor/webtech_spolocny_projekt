@@ -1,5 +1,5 @@
 <?php
-require_once("../config.php");
+require_once("config.php");
 require_once("authentication.php");
 
 /**
@@ -30,7 +30,6 @@ function authorize()
 {
   $url = getClearUrl();
   $auth = getAuthentication();
-  // echo $url;
 
   if (!getAuthentication()) {
     if ($url != "login.php") {
@@ -42,6 +41,7 @@ function authorize()
   switch ($url) {
     case 'zadanie1.php':
     case 'zadanie2.php':
+    case 'tasks.php':
       return $auth->type;
 
       break;

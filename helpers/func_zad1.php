@@ -75,7 +75,7 @@ function table($data, $student = false)
 
                     $headers = array_keys($user);
                     echo '<tr>';
-                    echo '<th scope="col">' . $id . '</th>';
+                    echo '<th scope="col">ID</th>';
                     foreach ($headers as $col) {
                         //select weight
                         echo '<th scope="col">' . $col . '</th>';

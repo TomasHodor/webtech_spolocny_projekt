@@ -8,6 +8,7 @@ require_once("helpers/authorization.php");
 require_once("helpers/csv.php");
 require_once("helpers/func_zad1.php");
 
+$output_status;
 $conn = new mysqli(servername,username, password, database );
 // Check connection
 if ($conn->connect_error) {
@@ -17,6 +18,27 @@ if ($conn->connect_error) {
 if (isset($_POST["pdf"])){
     data_Cookie($conn);
     require_once("helpers/pdf.php");
+}
+elseif (isset($_POST["delete"])) {
+    $nazov = $_POST["nazov"];
+    $DB_id = "SELECT `id_predmet`, `nazov` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";
+    $DB = $conn->query($DB_id);
+    $predmet_row = $DB->fetch_assoc();
+    $id_predmet = intval($predmet_row['id_predmet']);
+    $output_status = $predmet_row['nazov'];
+    //todo delete data from cookie
+
+
+    if (!$id_predmet) {
+        echo "predmet nieje v DB \n";
+    } else {
+        //vymaz z DB predmety, a hodnotenia
+        $DB_xPredmet = "DELETE FROM `zoznam_predmetov` WHERE `id_predmet` = $id_predmet;";
+//            $DB_xHosnotenie = "DELETE FROM `hodnotenie_predmetu` WHERE `id_predmet` = $id_predmet;";
+        $conn->multi_query($DB_xPredmet );
+    }
+    //todo delete data from cookie
+
 }
 
 
@@ -74,6 +96,7 @@ if($_GET["lang"] == "en") {
     echo '</ul>';
     echo '</div>';
     echo '</nav>';
+    echo "<h4> predmet: $output_status bol vymazany</h4>";
     echo '<h2>Results</h2>';
 
     switch(getAuthentication()->type) {
@@ -291,7 +314,7 @@ else {
         //todo test loaded file and skontroluj skryte znaky
         $delimeter = $_POST['oddelovac'];
         $csv_table_array = csvToTable($csv_file, $delimeter);
-        //
+
         //insert data to db\
         $id_predmet;
         $predmet = (strlen($_POST["nazov"])) != 0 ? $_POST["nazov"] : "bez nazvu";
@@ -335,22 +358,6 @@ else {
             $stmt->execute();
         }
         $stmt->close();
-
-    } elseif (isset($_POST["delete"])) {
-        $nazov = $_POST["nazov"];
-        $DB_id = "SELECT `id_predmet` FROM `zoznam_predmetov` WHERE `nazov` = '$nazov'";
-        $DB = $conn->query($DB_id);
-        $id_predmet = intval($DB->fetch_assoc()['id_predmet']);
-
-        if (!$id_predmet) {
-            echo "predmet nieje v DB \n";
-        } else {
-            //vymaz z DB predmety, a hodnotenia
-            $DB_xPredmet = "DELETE FROM `zoznam_predmetov` WHERE `id_predmet` = $id_predmet;";
-            $DB_xHosnotenie = "DELETE FROM `hodnotenie_predmetu` WHERE `id_predmet` = $id_predmet;";
-            $tmp = $DB_xPredmet . $DB_xHosnotenie;
-            $conn->multi_query($DB_xPredmet . $DB_xHosnotenie);
-        }
 
     }
 
